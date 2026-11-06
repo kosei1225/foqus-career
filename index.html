@@ -1,0 +1,1431 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>キャリアを経営する</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Shippori+Mincho+B1:wght@400;700&display=swap">
+<style>
+/* Layout: ベージュの紙に写真を大きく置き、深緑と蛍光グリーン1色で引き締める。写真の上だけ明朝の太字、白地の上の明朝は細字。手描きの線を Hero に1本 */
+:root {
+  --paper: #EFEDE4;
+  --sheet: #FFFFFF;
+  --ink: #1C2B22;
+  --muted: #6E7A72;
+  --line: #D8D4C8;
+  --deep: #16301F;
+  --on-deep: #F2F0E8;
+  --pop: #00D959;
+  --pop-d: #00B84A;
+  --on-pop: #0E2416;
+  --on-ink: #FFFFFF;
+  /* のぞく・つくる・じぶん：色相を変えず、濃さで段階を表す（じぶんが一番濃い） */
+  --s1: #D8D4C8; --s1-ink: #1C2B22;
+  --s2: #6E7A72; --s2-ink: #FFFFFF;
+  --s3: #1C2B22; --s3-ink: #FFFFFF;
+  /* ステータス画面は印刷された紙として描くので、表示テーマにかかわらず同じ色 */
+  --print-bg: #FFFFFF;
+  --print-tint: #F6F5F0;
+  --print-ink: #1C2B22;
+  --print-muted: #6E7A72;
+  --print-line: #CFCABD;
+  --f-display: "Shippori Mincho B1", "Hiragino Mincho ProN", serif;
+  --f-body: "BIZ UDPGothic", "Hiragino Kaku Gothic ProN", sans-serif;
+  --sp-xl: 160px;
+  --sp-l: 120px;
+  --sp-m: 72px;
+  --sp-s: 32px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121814; --sheet: #19211C; --ink: #E5EAE3; --muted: #9DA89F; --line: #2E3A32;
+    --deep: #0B1A10; --on-deep: #F2F0E8; --pop: #00D959; --pop-d: #00B84A; --on-pop: #0E2416; --on-ink: #121814;
+    --s1: #2E3A32; --s1-ink: #E5EAE3; --s2: #8A968D; --s2-ink: #121814; --s3: #E5EAE3; --s3-ink: #121814;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #121814; --sheet: #19211C; --ink: #E5EAE3; --muted: #9DA89F; --line: #2E3A32;
+  --deep: #0B1A10; --on-deep: #F2F0E8; --pop: #00D959; --pop-d: #00B84A; --on-pop: #0E2416; --on-ink: #121814;
+  --s1: #2E3A32; --s1-ink: #E5EAE3; --s2: #8A968D; --s2-ink: #121814; --s3: #E5EAE3; --s3-ink: #121814;
+  color-scheme: dark;
+}
+@media (max-width: 600px) { :root { --sp-xl: 104px; --sp-l: 80px; --sp-m: 56px; --sp-s: 24px; } }
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 64px; }
+body { background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.85; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--sheet); }
+a { color: inherit; }
+img { display: block; max-width: 100%; height: auto; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+/* 白地・ベージュ地の上の明朝は細字。写真と深緑の上だけ太字 */
+h1, h2 { font-family: var(--f-display); font-weight: 400; margin: 0; line-height: 1.45; letter-spacing: .03em; text-wrap: balance; word-break: auto-phrase; }
+h3, h4 { font-family: var(--f-body); font-weight: 700; margin: 0; line-height: 1.5; text-wrap: balance; word-break: auto-phrase; }
+.quiz-q, .evcard .txt, .vow, .q-card .qt { word-break: auto-phrase; }
+p { margin: 0; }
+ul { margin: 0; padding: 0; list-style: none; }
+figure { margin: 0; }
+.wrap { width: 100%; max-width: 1140px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 761px) and (max-width: 1240px) { .wrap { padding-right: max(60px, env(safe-area-inset-right, 0px)); } }
+.num { font-variant-numeric: tabular-nums; }
+.marker { background: linear-gradient(transparent 60%, var(--pop) 60%); padding: 0 .1em; }
+
+/* 矢印のリンク */
+.more { display: inline-flex; align-items: baseline; gap: .5em; font-weight: 700; font-size: 15px; color: var(--ink); text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 2px; line-height: 1.5; }
+.more .ar { display: inline-block; transition: transform .15s; }
+.more:hover .ar, .more:focus-visible .ar { transform: translateX(4px); }
+@media (prefers-reduced-motion: reduce) { .more .ar { transition: none; } }
+.btn-pop { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 12px 32px; border-radius: 2px; border: 0; background: var(--pop); color: var(--on-pop); font-family: var(--f-body); font-weight: 700; font-size: 16px; cursor: pointer; line-height: 1.3; }
+.btn-pop:hover { background: var(--pop-d); }
+
+/* 右端の固定タブ（モバイルは下に横並び） */
+.side-cta { position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 30; width: 46px; padding: 22px 0; background: var(--pop); color: var(--on-pop); writing-mode: vertical-rl; font-weight: 700; font-size: 15px; letter-spacing: .14em; text-decoration: none; display: flex; align-items: center; justify-content: center; border-radius: 2px 0 0 2px; }
+.side-cta:hover { background: var(--pop-d); }
+@media (max-width: 760px) {
+  .side-cta { top: auto; bottom: 0; left: 0; right: 0; transform: none; width: auto; writing-mode: horizontal-tb; letter-spacing: .08em; padding: 14px max(16px, env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); border-radius: 0; }
+  body { padding-bottom: calc(52px + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* 上の帯とヘッダー */
+.testbar { background: var(--sheet); color: var(--ink); font-size: 13px; line-height: 1.6; border-bottom: 1px solid var(--line); }
+.testbar .wrap { padding-block: 9px; }
+.testbar a { text-decoration: none; display: inline-flex; gap: .5em; }
+.testbar a:hover span:first-child { text-decoration: underline; text-underline-offset: 3px; }
+.site-head { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--sheet); border-bottom: 1px solid var(--line); }
+.site-head .wrap { display: flex; align-items: center; gap: 24px; padding-block: 14px; }
+.brand { display: flex; align-items: baseline; gap: 10px; text-decoration: none; white-space: nowrap; }
+.brand .co { font-size: 13px; font-weight: 700; letter-spacing: .14em; color: var(--muted); }
+.brand span:last-child { font-family: var(--f-display); font-size: 17px; }
+.nav { display: flex; gap: 22px; margin-left: auto; font-size: 14px; }
+.nav a { text-decoration: none; color: var(--muted); white-space: nowrap; }
+.nav a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 920px) { .nav { display: none; } }
+
+/* セクション共通 */
+section { padding-block: var(--sp-m); }
+section.white { background: var(--sheet); }
+.pt-xl { padding-top: var(--sp-xl); } .pb-xl { padding-bottom: var(--sp-xl); }
+.pt-l { padding-top: var(--sp-l); } .pb-l { padding-bottom: var(--sp-l); }
+.sec-label { font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: .14em; }
+h2.sec { font-size: clamp(28px, 3.8vw, 40px); margin-top: 12px; }
+.sec-lead { margin-top: 16px; font-size: 16px; max-width: 42em; color: var(--muted); }
+
+/* 写真 */
+.bleed img { width: 100%; height: clamp(260px, 42vw, 640px); object-fit: cover; }
+
+/* ヒーロー：写真全面＋白抜きの明朝太字＋手描きの楕円 */
+.hero { position: relative; padding: 0; min-height: max(560px, calc(100svh - 100px)); display: grid; place-items: center; overflow: hidden; color: #FFFFFF; }
+.hero-bg { position: absolute; inset: 0; }
+.hero-bg img { width: 100%; height: 100%; object-fit: cover; object-position: 55% 50%; }
+.hero-bg::after { content: ""; position: absolute; inset: 0; background: rgba(20, 30, 25, 0.42); }
+.hero-in { position: relative; z-index: 1; display: grid; justify-items: center; gap: 40px; padding: 96px max(16px, env(safe-area-inset-right, 0px)) 96px max(16px, env(safe-area-inset-left, 0px)); text-align: center; }
+.hero-title { position: relative; display: inline-block; font-size: clamp(34px, 5vw, 64px); padding: .9em 1.6em; }
+.hero h1 { font-weight: 700; color: #FFFFFF; font-size: 1em; line-height: 1.45; letter-spacing: .04em; text-align: center; }
+.hand-circle { position: absolute; top: -6%; left: -4%; width: 108%; height: 112%; overflow: visible; pointer-events: none; }
+.hand-circle path { fill: none; stroke: #FFFFFF; stroke-width: 1.5; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.hero .more { color: #FFFFFF; font-weight: 700; }
+@media (max-width: 600px) { .hero-title { padding: 1.6em .5em; } .hand-circle { top: -6%; left: -4%; width: 108%; height: 112%; } }
+
+/* PICKUP */
+.pick { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 48px; align-items: start; }
+.pick-head h2 { font-size: clamp(36px, 4.4vw, 52px); letter-spacing: .12em; line-height: 1.1; }
+.pick-head p { margin-top: 10px; font-size: 13px; color: var(--muted); letter-spacing: .1em; }
+.pick-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.pcard { position: relative; display: block; aspect-ratio: 16 / 10; overflow: hidden; color: #FFFFFF; text-decoration: none; }
+.pcard img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pcard::after { content: ""; position: absolute; inset: 0; background: rgba(20, 30, 25, 0.48); }
+.pcard:hover::after { background: rgba(20, 30, 25, 0.6); }
+.pc-in { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 22px 24px; }
+.pc-t { font-family: var(--f-display); font-weight: 700; font-size: clamp(18px, 1.9vw, 22px); line-height: 1.55; letter-spacing: .04em; }
+.pc-l { align-self: flex-start; font-size: 13px; font-weight: 700; border-bottom: 1px solid #FFFFFF; padding-bottom: 3px; display: inline-flex; gap: .5em; }
+.pcard:hover .pc-l .ar { transform: translateX(4px); }
+.pc-l .ar { display: inline-block; transition: transform .15s; }
+@media (prefers-reduced-motion: reduce) { .pc-l .ar { transition: none; } }
+@media (max-width: 860px) { .pick { grid-template-columns: minmax(0, 1fr); gap: var(--sp-s); } }
+@media (max-width: 520px) { .pick-cards { grid-template-columns: minmax(0, 1fr); } }
+
+/* 吹き出しの問い＋3ステップの円弧 */
+.about { text-align: center; }
+.bubble { position: relative; display: inline-block; background: var(--deep); color: var(--on-deep); font-weight: 700; font-size: 15px; padding: 12px 26px; border-radius: 20px; }
+.bubble::after { content: ""; position: absolute; left: 50%; bottom: -9px; transform: translateX(-50%); border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 10px solid var(--deep); }
+.about h2 { margin-top: 28px; font-size: clamp(24px, 3.4vw, 38px); line-height: 1.7; }
+.about h2 .x { color: var(--muted); margin: 0 .2em; }
+.arcs { margin-top: calc(var(--sp-s) * 1.5); display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; max-width: 980px; margin-left: auto; margin-right: auto; }
+.arc { position: relative; aspect-ratio: 1 / 1; max-width: 280px; width: 100%; justify-self: center; display: grid; place-items: center; }
+.arc svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.arc svg path { fill: none; stroke: var(--ink); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.arc-in { position: relative; display: grid; gap: 6px; padding: 0 16%; }
+.arc-in small { font-size: 12px; color: var(--muted); letter-spacing: .06em; }
+.arc-in b { font-family: var(--f-display); font-weight: 400; font-size: clamp(22px, 2.6vw, 30px); letter-spacing: .08em; }
+.arc-in span { font-size: 13px; line-height: 1.7; color: var(--muted); }
+.arc-x { font-size: 22px; color: var(--muted); }
+.eq { margin-top: var(--sp-s); font-family: var(--f-display); font-size: clamp(20px, 2.4vw, 26px); letter-spacing: .06em; }
+.eq span { color: var(--muted); margin-right: .8em; }
+@media (max-width: 760px) {
+  .arcs { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .arc { max-width: 240px; }
+  .arc-x { line-height: 1; }
+}
+
+/* 対象 */
+.aud { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: var(--sp-s); }
+.aud-card { background: var(--sheet); display: flex; flex-direction: column; min-width: 0; }
+.aud-ph img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.aud-card header { padding: 22px 24px 16px; border-bottom: 1px solid var(--line); }
+.aud-card .who { font-weight: 700; font-size: 20px; }
+.aud-card .who small { display: block; font-weight: 400; font-size: 13px; color: var(--muted); margin-top: 2px; }
+.aud-card .block { padding: 18px 24px; display: grid; gap: 10px; }
+.aud-card .block h3 { font-size: 12px; letter-spacing: .1em; color: var(--muted); }
+.aud-card ul { display: grid; gap: 8px; }
+.aud-card li { position: relative; padding-left: 18px; font-size: 15px; line-height: 1.7; }
+.aud-card .pain li::before { content: ""; position: absolute; left: 1px; top: .7em; width: 7px; height: 7px; border: 1px solid var(--muted); }
+.aud-card .gain { border-top: 1px solid var(--line); flex: 1; }
+.aud-card .gain li::before { content: ""; position: absolute; left: 1px; top: .7em; width: 7px; height: 7px; background: var(--ink); }
+.aud-card footer { padding: 4px 24px 24px; }
+@media (max-width: 920px) { .aud { grid-template-columns: minmax(0, 1fr); } }
+
+/* 約束 */
+.promise .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 64px; align-items: start; }
+.promise h2 { font-size: clamp(26px, 3.4vw, 34px); margin-top: 12px; }
+.promise .side { margin-top: 20px; font-size: 15px; color: var(--muted); display: grid; gap: 12px; }
+.promise-photo { margin-top: var(--sp-s); }
+.promise-photo img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
+.vow { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(18px, 2.05vw, 23px); line-height: 2.15; }
+.vow p + p { margin-top: 1.2em; }
+.vow-src { margin-top: 20px; font-size: 13px; color: var(--muted); }
+@media (max-width: 920px) { .promise .wrap { grid-template-columns: minmax(0, 1fr); gap: 28px; } .promise-photo { max-width: 420px; } }
+
+/* 50分の時間割 */
+.bar { display: flex; height: 52px; margin-top: var(--sp-s); border: 1px solid var(--line); background: var(--sheet); }
+.bar div { display: grid; place-items: center; font-weight: 700; font-size: 13px; min-width: 0; border-right: 1px solid var(--line); }
+.bar div:last-child { border-right: 0; }
+.bar .s0 { color: var(--muted); }
+.bar .s1 { background: var(--s1); color: var(--s1-ink); }
+.bar .s2 { background: var(--s2); color: var(--s2-ink); }
+.bar .s3 { background: var(--s3); color: var(--s3-ink); }
+.bar-key { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+.bar-key div { font-size: 13px; line-height: 1.5; min-width: 0; }
+.bar-key b { display: block; font-size: 14px; }
+.bar-key i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border: 1px solid var(--line); }
+.bar-key .m { color: var(--muted); font-size: 12px; }
+.k0 { background: var(--sheet); } .k1 { background: var(--s1); } .k2 { background: var(--s2); border-color: var(--s2) !important; } .k3 { background: var(--s3); border-color: var(--s3) !important; }
+@media (max-width: 760px) { .bar-key { grid-template-columns: repeat(2, minmax(0, 1fr)); } .bar { height: 44px; } .bar div { font-size: 11px; } }
+.step-ph { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: calc(var(--sp-s) * 1.5); }
+.step-ph figure { border-bottom: 4px solid var(--line); }
+.step-ph .s1 { border-color: var(--s1); } .step-ph .s2 { border-color: var(--s2); } .step-ph .s3 { border-color: var(--s3); }
+.step-ph img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+.step-ph .s3 img { object-position: 50% 30%; }
+@media (max-width: 560px) { .step-ph { gap: 8px; } }
+
+/* 体験パネル */
+.demo { margin-top: calc(var(--sp-s) * 1.5); background: var(--sheet); border: 1px solid var(--line); }
+.demo-head { padding: 20px 24px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; border-bottom: 1px solid var(--line); }
+.lesson-tag { display: inline-block; background: var(--s1); color: var(--s1-ink); padding: 3px 10px; font-weight: 700; font-size: 13px; letter-spacing: .06em; }
+.demo-head h3 { font-size: 19px; }
+.demo-head p { font-size: 13px; color: var(--muted); width: 100%; }
+.tabs { display: flex; overflow-x: auto; border-bottom: 1px solid var(--line); background: var(--paper); scrollbar-width: thin; }
+.tab { flex: 1 0 auto; min-height: 52px; padding: 10px 18px; border: 0; border-right: 1px solid var(--line); background: transparent; color: var(--muted); font-family: var(--f-body); font-weight: 700; font-size: 14px; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; display: grid; text-align: left; }
+.tab:last-child { border-right: 0; }
+.tab small { font-size: 11px; font-weight: 400; }
+.tab[aria-selected="true"] { color: var(--ink); background: var(--sheet); border-bottom-color: var(--ink); }
+.panel { padding: 28px 24px 30px; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 32px; }
+.panel[hidden] { display: none; }
+.panel .lab { font-weight: 700; font-size: 13px; letter-spacing: .06em; }
+.panel .col { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.panel .hint { font-size: 13px; color: var(--muted); }
+@media (max-width: 860px) { .panel { grid-template-columns: minmax(0, 1fr); } }
+.quiz-q { font-weight: 700; font-size: 20px; line-height: 1.6; }
+.choices { display: grid; gap: 8px; }
+.choice { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 12px 14px; min-height: 48px; border-radius: 2px; border: 1px solid var(--line); background: var(--sheet); color: var(--ink); font: inherit; font-size: 15px; cursor: pointer; }
+.choice b { width: 26px; height: 26px; display: grid; place-items: center; border: 1px solid var(--ink); flex: none; font-size: 13px; }
+.choice:hover { border-color: var(--ink); }
+.choice.right { border-color: var(--ink); background: var(--s1); color: var(--s1-ink); }
+.choice.right b { background: var(--ink); border-color: var(--ink); color: var(--on-ink); }
+.choice.wrong { color: var(--muted); }
+.answer { border: 1px solid var(--ink); padding: 14px 16px; background: var(--sheet); display: grid; gap: 8px; }
+.answer.wait { border-style: dashed; border-color: var(--line); color: var(--muted); }
+.fact { font-size: 13px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 8px; }
+.term { display: grid; grid-template-columns: auto minmax(0, 1fr); border: 1px solid var(--line); }
+.term .tl { background: var(--s1); color: var(--s1-ink); padding: 10px 12px; font-weight: 700; font-size: 13px; line-height: 1.5; }
+.term .tl small { display: block; font-size: 11px; font-weight: 400; }
+.term .tb { padding: 10px 14px; font-size: 14px; line-height: 1.7; background: var(--sheet); }
+.diagram { background: var(--paper); border: 1px solid var(--line); padding: 10px; }
+.diagram svg { width: 100%; height: auto; display: block; }
+.diagram .t { fill: var(--ink); font-family: var(--f-body); font-weight: 700; font-size: 15px; }
+.diagram .s { fill: var(--muted); font-size: 11px; font-family: var(--f-body); }
+.diagram .node { fill: var(--sheet); stroke: var(--ink); stroke-width: 1.2; }
+.diagram .center { fill: var(--s1); stroke: var(--ink); stroke-width: 1.2; }
+.diagram .goods { stroke: var(--ink); stroke-width: 1.6; fill: none; }
+.diagram .money { stroke: var(--muted); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+.diagram .al { font-size: 12px; font-family: var(--f-body); font-weight: 700; }
+.diagram .ag { fill: var(--ink); } .diagram .am { fill: var(--muted); }
+.diagram .ah-g { fill: var(--ink); } .diagram .ah-m { fill: var(--muted); }
+.steps3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.steps3 div { border: 1px solid var(--s2); padding: 10px 12px; font-size: 13px; line-height: 1.6; min-width: 0; }
+.steps3 b { display: block; font-size: 14px; }
+.steps3 .n { color: var(--muted); font-weight: 700; }
+@media (max-width: 520px) { .steps3 { grid-template-columns: minmax(0, 1fr); } }
+.sheet { border: 1px solid var(--s2); font-size: 14px; margin: 0; }
+.sheet div { display: grid; grid-template-columns: 9em minmax(0, 1fr); border-top: 1px solid var(--line); }
+.sheet div:first-child { border-top: 0; }
+.sheet dt, .sheet dd { margin: 0; padding: 10px 12px; }
+.sheet dt { background: var(--s2); color: var(--s2-ink); font-weight: 700; }
+.sheet dd { color: var(--muted); }
+.roles { display: flex; flex-wrap: wrap; gap: 6px; }
+.roles span { font-size: 13px; padding: 2px 10px; border: 1px solid var(--s2); }
+.q-card { border: 1px solid var(--s3); }
+.q-card .qh { display: grid; grid-template-columns: auto minmax(0, 1fr); }
+.q-card .qn { background: var(--s3); color: var(--s3-ink); padding: 10px 12px; font-weight: 700; font-size: 14px; line-height: 1.3; text-align: center; }
+.q-card .qn small { display: block; font-size: 10px; font-weight: 400; }
+.q-card .qt { padding: 10px 14px; font-weight: 700; font-size: 16px; line-height: 1.6; }
+.q-card .ex { margin: 0 14px 12px; background: var(--paper); border: 1px solid var(--line); padding: 8px 12px; font-size: 14px; }
+.q-card .ex b { font-size: 12px; margin-right: 8px; }
+.ver { border: 1px solid var(--line); }
+.ver div { display: grid; grid-template-columns: 6.5em minmax(0, 1fr); border-bottom: 1px solid var(--line); min-height: 40px; }
+.ver div:last-child { border-bottom: 0; }
+.ver span { font-size: 12px; padding: 10px 12px; font-weight: 700; }
+.ver em { font-style: normal; font-size: 13px; color: var(--muted); padding: 10px 12px; border-left: 1px solid var(--line); }
+.evcard { border: 1px solid var(--line); background: var(--sheet); padding: 16px 18px; display: grid; gap: 14px; max-width: 460px; }
+.evcard .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.evcard .pill { background: var(--s1); color: var(--s1-ink); font-size: 12px; font-weight: 700; padding: 2px 10px; }
+.evcard .top span:last-child { font-size: 12px; color: var(--muted); }
+.evcard .txt { font-weight: 700; font-size: 18px; line-height: 1.65; }
+.evcard .ask { border: 1px solid var(--ink); padding: 8px 14px; font-weight: 700; font-size: 14px; }
+.say { border-left: 2px solid var(--ink); padding: 4px 0 4px 14px; font-size: 15px; }
+.say b { display: block; font-size: 12px; color: var(--muted); }
+.ichite { border: 1px solid var(--line); background: var(--paper); padding: 14px 16px; display: grid; gap: 10px; }
+.ichite .h { font-weight: 700; font-size: 15px; }
+.ichite label { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: start; font-size: 14px; line-height: 1.6; cursor: pointer; }
+.ichite input { width: 18px; height: 18px; margin-top: 3px; accent-color: var(--ink); }
+.ichite .g { font-size: 11px; font-weight: 700; border: 1px solid var(--line); background: var(--sheet); padding: 0 8px; white-space: nowrap; }
+.ichite .res { border-top: 1px dashed var(--line); padding-top: 8px; font-size: 12px; color: var(--muted); }
+.planblock { display: grid; grid-template-columns: auto minmax(0, 1fr); border: 1px solid var(--s3); }
+.planblock .pl { background: var(--s3); color: var(--s3-ink); padding: 10px 14px; font-weight: 700; font-size: 15px; line-height: 1.3; }
+.planblock .pl small { display: block; font-size: 10px; font-weight: 400; }
+.planblock .pt { padding: 10px 14px; font-size: 14px; }
+.enjoy { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; border: 1px solid var(--line); padding: 8px 12px; }
+.enjoy b { font-size: 13px; }
+.enjoy .scale { display: flex; gap: 4px; }
+.enjoy .scale button { width: 34px; height: 34px; border-radius: 2px; border: 1px solid var(--ink); background: var(--sheet); color: var(--ink); font-family: var(--f-body); font-weight: 700; cursor: pointer; }
+.enjoy .scale button[aria-pressed="true"] { background: var(--ink); color: var(--on-ink); }
+
+/* 12回 */
+section.course { padding-top: 0; }
+.course .wrap.first { padding-top: var(--sp-l); }
+.course-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: start; }
+.status-ctrl { display: grid; gap: 8px; margin-top: var(--sp-s); padding-top: 20px; border-top: 1px solid var(--line); }
+.status-ctrl label { font-size: 14px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.status-ctrl input[type=range] { width: 100%; accent-color: var(--ink); }
+.status-ctrl .note { font-size: 13px; color: var(--muted); line-height: 1.7; }
+.unlock { font-size: 13px; font-weight: 700; min-height: 1.7em; }
+@media (max-width: 920px) { .course-top { grid-template-columns: minmax(0, 1fr); gap: var(--sp-s); } }
+
+/* ステータス画面：紙に印刷されたページとして */
+.paper { margin: 0; background: var(--print-bg); color: var(--print-ink); border: 1px solid var(--print-line); padding: 18px 20px 12px; transform: rotate(-0.5deg); max-width: 560px; justify-self: end; width: 100%; }
+.paper-top { display: flex; justify-content: space-between; font-size: 11px; color: var(--print-muted); margin-bottom: 10px; }
+.paper-top b { border: 1px solid var(--print-ink); padding: 0 6px; color: var(--print-ink); font-size: 10px; letter-spacing: .1em; }
+.paper-foot { text-align: center; font-size: 10px; color: var(--print-muted); margin-top: 10px; }
+.status { border: 1.5px solid var(--print-ink); }
+.status-head { background: var(--print-ink); color: #FFFFFF; display: flex; align-items: baseline; gap: 12px; padding: 8px 14px; }
+.status-head strong { font-size: 15px; }
+.status-head em { font-style: normal; font-weight: 700; font-size: 15px; }
+.status-head .en { margin-left: auto; font-size: 10px; letter-spacing: .14em; }
+.status-body { background: var(--print-tint); padding: 12px 14px 14px; display: grid; gap: 10px; }
+.status-meta { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 12px; color: var(--print-muted); border-bottom: 1px dashed var(--print-line); padding-bottom: 8px; }
+.status-meta b { color: var(--print-ink); }
+.g-row, .p-row { display: grid; grid-template-columns: 92px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.g-row .k { font-weight: 700; font-size: 19px; line-height: 1; }
+.g-row .k small { display: block; font-weight: 400; font-size: 10.5px; color: var(--print-muted); margin-top: 5px; line-height: 1.35; }
+.g-row .v { font-size: 12px; color: var(--print-muted); text-align: right; white-space: nowrap; line-height: 1.45; }
+.g-row .v b { font-size: 15px; color: var(--print-ink); }
+.p-row .k { font-weight: 700; font-size: 13px; }
+.p-row .v { font-size: 13px; font-weight: 700; white-space: nowrap; }
+.gauge { width: 100%; max-width: 216px; height: auto; display: block; }
+.gauge.boxes { max-width: 250px; }
+.gauge circle, .gauge rect { fill: none; stroke: var(--print-ink); stroke-width: 1.5; }
+.gauge .on { fill: var(--print-ink); }
+.gauge.words .on { fill: var(--print-muted); stroke: var(--print-muted); }
+.gauge .lock { stroke: var(--print-line); }
+.gauge line { stroke: var(--print-line); stroke-width: 1.2; }
+.track { display: flex; align-items: center; gap: 3px; flex-wrap: wrap; padding-top: 4px; }
+.track svg { display: block; flex: none; }
+.track circle, .track rect { fill: none; stroke: var(--print-ink); stroke-width: 1.2; }
+.track text { fill: var(--print-muted); font-family: var(--f-body); font-size: 9px; font-weight: 700; }
+.track .on circle, .track .on rect { fill: var(--print-ink); }
+.track .on text { fill: #FFFFFF; }
+.track .kessan rect { stroke-width: 2; }
+.track .kessan text { fill: var(--print-ink); }
+.track .kessan.on text { fill: #FFFFFF; }
+@media (max-width: 420px) { .g-row, .p-row { grid-template-columns: 80px minmax(0, 1fr) auto; gap: 8px; } .g-row .k small { font-size: 10px; } .paper { padding: 14px 12px 10px; } }
+
+.acts { display: grid; gap: 32px; margin-top: var(--sp-l); }
+.act-row { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 20px; align-items: start; }
+.act-name { display: grid; gap: 4px; }
+.act-name .en { font-size: 12px; font-weight: 700; letter-spacing: .12em; color: var(--muted); }
+.act-name b { font-weight: 700; font-size: 19px; line-height: 1.4; }
+.act-name span:last-child { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.lessons { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.act-row.a3 .lessons { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.act-row.p .lessons { grid-template-columns: minmax(0, 1fr); }
+.les { background: var(--sheet); color: var(--ink); display: flex; flex-direction: column; min-width: 0; }
+.les .band-h { padding: 7px 12px; font-weight: 700; font-size: 12px; letter-spacing: .06em; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.les .band-h .k { background: var(--sheet); color: var(--ink); font-size: 11px; letter-spacing: 0; padding: 0 8px; border: 1px solid var(--ink); }
+.c-pro .band-h { background: var(--sheet); color: var(--ink); border-bottom: 1px solid var(--line); }
+.c-look .band-h { background: var(--s1); color: var(--s1-ink); }
+.c-make .band-h { background: var(--s2); color: var(--s2-ink); }
+.c-me .band-h { background: var(--s3); color: var(--s3-ink); }
+.les .bd { padding: 12px 12px 14px; display: grid; gap: 8px; flex: 1; align-content: start; }
+.les h3 { font-size: 15px; line-height: 1.55; }
+.les dl { margin: 0; display: grid; gap: 2px; font-size: 12px; }
+.les dl div { display: grid; grid-template-columns: 3.6em minmax(0, 1fr); gap: 6px; }
+.les dt { color: var(--muted); }
+.les dd { margin: 0; }
+.les .blk { margin-top: auto; font-size: 12px; font-weight: 700; border-top: 1px solid var(--line); padding-top: 8px; }
+.act-row.p .les { flex-direction: row; }
+.act-row.p .les .band-h { flex-direction: column; justify-content: center; min-width: 120px; border-bottom: 0; border-right: 1px solid var(--line); }
+@media (max-width: 1000px) { .lessons, .act-row.a3 .lessons { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .act-row { grid-template-columns: minmax(0, 1fr); gap: 12px; } }
+@media (max-width: 440px) { .lessons, .act-row.a3 .lessons { grid-template-columns: minmax(0, 1fr); } .act-row.p .les { flex-direction: column; } .act-row.p .les .band-h { flex-direction: row; border-right: 0; border-bottom: 1px solid var(--line); } }
+.course-foot { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 48px; margin-top: var(--sp-l); align-items: start; }
+.course-foot img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+@media (max-width: 860px) { .course-foot { grid-template-columns: minmax(0, 1fr); gap: var(--sp-s); } }
+.note-box { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+.note-box > div { border-top: 1px solid var(--line); padding-top: 16px; font-size: 14px; color: var(--muted); min-width: 0; }
+.note-box h3 { font-size: 15px; margin-bottom: 6px; color: var(--ink); }
+
+/* 変わっていい（深緑の1画面） */
+.change { background: var(--deep); color: var(--on-deep); min-height: 100svh; display: grid; place-items: center; padding-block: var(--sp-xl); text-align: center; }
+.change p { font-family: var(--f-display); font-weight: 700; font-size: clamp(22px, 3.2vw, 38px); line-height: 1.9; letter-spacing: .05em; word-break: auto-phrase; text-wrap: balance; }
+.change p + p { margin-top: 1.4em; }
+
+/* 仕掛け */
+.mech { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-top: var(--sp-s); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+.mc { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 24px; display: grid; gap: 10px; align-content: start; background: var(--sheet); min-width: 0; }
+.mc .when { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .06em; }
+.mc h3 { font-size: 18px; }
+.mc p { font-size: 14px; line-height: 1.8; }
+.mc-photo { position: relative; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); min-height: 220px; }
+.mc-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 920px) { .mech { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .mech { grid-template-columns: minmax(0, 1fr); } .mc-photo { min-height: 0; aspect-ratio: 16 / 9; } }
+.never { margin-top: var(--sp-l); border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); padding: 20px 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 24px; align-items: center; }
+.never h3 { font-size: 17px; white-space: nowrap; }
+.never ul { display: flex; flex-wrap: wrap; gap: 8px 10px; }
+.never li { font-size: 14px; padding: 3px 10px; border: 1px solid var(--line); background: var(--sheet); }
+.never li s { text-decoration-thickness: 1px; }
+@media (max-width: 760px) { .never { grid-template-columns: minmax(0, 1fr); gap: 12px; } }
+
+/* 教材ギャラリー */
+.mat-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px); gap: 64px; align-items: end; }
+.mat-head img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+@media (max-width: 760px) { .mat-head { grid-template-columns: minmax(0, 1fr); gap: var(--sp-s); } .mat-head figure { max-width: 320px; } }
+.gallery { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px 20px; margin-top: calc(var(--sp-s) * 1.5); }
+.g-item { display: grid; gap: 8px; text-align: left; background: none; border: 0; padding: 0; cursor: zoom-in; color: var(--ink); font: inherit; min-width: 0; align-content: start; }
+.g-item .ph { aspect-ratio: 1200 / 1698; overflow: hidden; background: #FFFFFF; border: 1px solid var(--line); max-width: 100%; display: block; }
+.g-item .ph img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+.g-item:hover .ph { border-color: var(--ink); }
+.g-item b { font-size: 15px; display: block; line-height: 1.45; }
+.g-item span { font-size: 13px; color: var(--muted); line-height: 1.6; display: block; }
+.g-item .tg { font-size: 11px; letter-spacing: .06em; }
+@media (max-width: 920px) { .gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 14px; } }
+dialog.lb { border: 0; padding: 0; background: transparent; max-width: min(92vw, 820px); width: 100%; max-height: 94vh; color: var(--ink); }
+dialog.lb::backdrop { background: rgba(20, 30, 25, .75); }
+.lb-in { background: var(--sheet); border: 1px solid var(--line); display: grid; grid-template-rows: minmax(0, 1fr) auto; max-height: 94vh; }
+.lb-img { overflow: auto; background: #FFFFFF; }
+.lb-img img { width: 100%; display: block; }
+.lb-bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-top: 1px solid var(--line); }
+.lb-bar p { flex: 1; font-size: 14px; min-width: 0; }
+.lb-bar p b { margin-right: 8px; }
+.lb-bar button { min-width: 44px; min-height: 44px; border-radius: 2px; border: 1px solid var(--line); background: var(--sheet); color: var(--ink); font-family: var(--f-body); font-weight: 700; cursor: pointer; padding: 0 14px; }
+
+/* 講座の組み方 */
+.formats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: var(--sp-s); }
+.fm { background: var(--sheet); display: flex; flex-direction: column; min-width: 0; }
+.fm-ph img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.fm header { padding: 20px 24px; display: grid; gap: 6px; border-bottom: 1px solid var(--line); }
+.fm .kind { font-weight: 700; font-size: 12px; color: var(--muted); letter-spacing: .06em; }
+.fm h3 { font-size: 19px; }
+.fm .meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.fm .meta span { font-size: 12px; padding: 1px 8px; border: 1px solid var(--line); }
+.fm ol { list-style: none; margin: 0; padding: 12px 24px 16px; flex: 1; }
+.fm li { display: grid; grid-template-columns: 6.8em minmax(0, 1fr); gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; line-height: 1.65; }
+.fm li:last-child { border-bottom: 0; }
+.fm li .w { font-weight: 700; font-size: 13px; }
+.fm li.k { background: var(--paper); margin: 0 -24px; padding-left: 24px; padding-right: 24px; }
+.fm footer { padding: 12px 24px 18px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); }
+@media (max-width: 860px) { .formats { grid-template-columns: minmax(0, 1fr); } }
+
+/* 確かめたいこと */
+.wide-ph { margin-top: var(--sp-s); }
+.wide-ph img { width: 100%; aspect-ratio: 16 / 7; object-fit: cover; }
+.checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; margin-top: var(--sp-s); }
+.ck { display: grid; gap: 16px; align-content: start; min-width: 0; }
+.ck > h3 { font-size: 19px; display: flex; align-items: center; gap: 10px; }
+.ck > h3 span { font-size: 12px; padding: 0 8px; border: 1px solid var(--ink); }
+.box { background: var(--sheet); border: 1px solid var(--line); padding: 18px 20px; display: grid; gap: 10px; font-size: 14px; min-width: 0; }
+.box h4 { font-size: 15px; }
+.rub { display: grid; gap: 0; border: 1px solid var(--line); }
+.rub div { display: grid; grid-template-columns: 2.2em minmax(0, 1fr); gap: 12px; align-items: start; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.rub div:last-child { border-bottom: 0; }
+.rub b { width: 28px; height: 28px; display: grid; place-items: center; font-size: 13px; }
+.rub div:nth-child(1) b { background: var(--s1); color: var(--s1-ink); }
+.rub div:nth-child(2) b { background: var(--s2); color: var(--s2-ink); }
+.rub div:nth-child(3) b { background: var(--s3); color: var(--s3-ink); }
+.rub p { font-weight: 700; line-height: 1.55; }
+.rub small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+.dots-list li { position: relative; padding-left: 16px; line-height: 1.7; }
+.dots-list li + li { margin-top: 6px; }
+.dots-list li::before { content: ""; position: absolute; left: 1px; top: .72em; width: 6px; height: 6px; background: var(--muted); }
+.out-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.out-tags span { font-size: 13px; padding: 1px 8px; border: 1px dashed var(--muted); }
+.metrics { overflow-x: auto; }
+.metrics table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 420px; }
+.metrics th, .metrics td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.6; }
+.metrics th { font-size: 12px; color: var(--muted); font-weight: 700; }
+.small { font-size: 12px; color: var(--muted); line-height: 1.7; }
+sup.ref a { font-size: 11px; text-decoration: none; color: var(--muted); }
+@media (max-width: 860px) { .checks { grid-template-columns: minmax(0, 1fr); } }
+
+/* 届くもの */
+.pkg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin-top: var(--sp-s); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+.pk { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 20px 22px; display: grid; gap: 6px; align-content: start; min-width: 0; background: var(--sheet); }
+.pk .n { font-weight: 700; font-size: 28px; line-height: 1.1; }
+.pk .n small { font-size: 14px; margin-left: 4px; color: var(--muted); }
+.pk h3 { font-size: 16px; }
+.pk p { font-size: 13px; color: var(--muted); line-height: 1.7; }
+@media (max-width: 860px) { .pkg { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .pkg { grid-template-columns: minmax(0, 1fr); } }
+
+/* 声（これから集める） */
+.voice-note { margin-top: var(--sp-s); font-size: 15px; color: var(--muted); }
+.voices { margin-top: var(--sp-s); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; }
+.voices:empty { display: none; }
+.voice { border-top: 1px solid var(--line); padding-top: 20px; }
+.voice blockquote { margin: 0; font-size: 16px; line-height: 2; }
+.voice figcaption { margin-top: 12px; font-size: 13px; color: var(--muted); }
+@media (max-width: 760px) { .voices { grid-template-columns: minmax(0, 1fr); } }
+
+/* 料金 */
+.kari { display: inline-block; font-family: var(--f-body); font-size: 12px; font-weight: 700; background: var(--pop); color: var(--on-pop); padding: 0 8px; vertical-align: middle; margin-left: 10px; line-height: 1.8; letter-spacing: 0; }
+.kari-s { font-size: 12px; color: var(--muted); margin-left: 4px; font-weight: 400; }
+.prices { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: var(--sp-s); align-items: stretch; }
+.pr { background: var(--sheet); padding: 24px 22px; display: flex; flex-direction: column; gap: 14px; min-width: 0; border: 1px solid var(--sheet); }
+.pr.main { border: 2px solid var(--ink); }
+.pr .tag { font-weight: 700; font-size: 12px; color: var(--muted); letter-spacing: .06em; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.pr .tag em { font-style: normal; background: var(--ink); color: var(--on-ink); padding: 0 8px; letter-spacing: 0; }
+.pr h3 { font-size: 18px; }
+.pr .yen { font-weight: 700; font-size: 28px; line-height: 1.2; }
+.pr .yen small { font-size: 13px; color: var(--muted); display: block; margin-top: 4px; line-height: 1.5; }
+.pr ul { display: grid; gap: 6px; font-size: 13px; line-height: 1.65; flex: 1; }
+.pr li { position: relative; padding-left: 14px; }
+.pr li::before { content: ""; position: absolute; left: 0; top: .72em; width: 6px; height: 6px; background: var(--ink); }
+.pr .more { align-self: flex-start; font-size: 14px; }
+@media (max-width: 1000px) { .prices { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .prices { grid-template-columns: minmax(0, 1fr); } }
+.trial { margin-top: 24px; border: 1px solid var(--ink); padding: 20px 24px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; background: var(--sheet); }
+.trial h3 { font-size: 17px; }
+.trial p { font-size: 14px; color: var(--muted); margin-top: 4px; }
+@media (max-width: 700px) { .trial { grid-template-columns: minmax(0, 1fr); } }
+
+/* よくある質問 */
+.faq { margin-top: var(--sp-s); max-width: 860px; border-top: 1px solid var(--line); }
+.faq details { border-bottom: 1px solid var(--line); }
+.faq summary { cursor: pointer; padding: 18px 44px 18px 0; font-weight: 700; font-size: 16px; list-style: none; position: relative; line-height: 1.6; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 20px; color: var(--muted); }
+.faq details[open] summary::after { content: "−"; }
+.faq details p { padding: 0 0 20px; font-size: 15px; color: var(--muted); line-height: 1.85; max-width: 46em; }
+
+/* 相談 */
+.contact .wrap { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 64px; align-items: start; }
+.contact h2 { font-size: clamp(28px, 3.8vw, 38px); margin-top: 12px; }
+.contact .lead2 { margin-top: 16px; font-size: 16px; color: var(--muted); }
+.contact .flow { margin-top: var(--sp-s); display: grid; gap: 0; border-top: 1px solid var(--line); }
+.contact .flow div { display: grid; grid-template-columns: 2.4em minmax(0, 1fr); gap: 10px; align-items: baseline; font-size: 15px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.contact .flow b { font-size: 14px; color: var(--muted); }
+form.cf { background: var(--sheet); color: var(--ink); padding: 28px; display: grid; gap: 18px; }
+.cf .row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 560px) { .cf .row2 { grid-template-columns: minmax(0, 1fr); } }
+.cf label, .cf legend { font-weight: 700; font-size: 14px; display: grid; gap: 6px; }
+.cf input[type=text], .cf input[type=email], .cf select, .cf textarea { font: inherit; font-weight: 400; font-size: 15px; padding: 10px 12px; border-radius: 0; border: 1px solid var(--line); background: var(--paper); color: var(--ink); width: 100%; min-height: 44px; }
+.cf textarea { min-height: 96px; resize: vertical; }
+.cf fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 8px; }
+.cf .checks2 { display: flex; flex-wrap: wrap; gap: 8px; }
+.cf .checks2 label { font-weight: 400; display: flex; align-items: center; gap: 6px; padding: 5px 12px; border: 1px solid var(--line); cursor: pointer; font-size: 14px; }
+.cf .checks2 input { accent-color: var(--ink); width: 16px; height: 16px; }
+.cf .done { background: var(--paper); border: 1px solid var(--line); padding: 12px 14px; font-size: 14px; }
+.cf .btn-pop { justify-self: start; }
+@media (max-width: 860px) { .contact .wrap { grid-template-columns: minmax(0, 1fr); gap: 28px; } }
+
+/* フッター（深緑） */
+footer.site { padding-block: 64px 72px; font-size: 13px; color: var(--on-deep); background: var(--deep); }
+footer.site .wrap { display: grid; gap: 20px; }
+footer.site h2 { font-family: var(--f-body); font-size: 14px; font-weight: 700; letter-spacing: 0; }
+footer.site ol { margin: 0; padding-left: 1.6em; display: grid; gap: 4px; }
+footer.site a { word-break: break-all; color: var(--on-deep); }
+footer.site .brandline { font-family: var(--f-display); font-weight: 700; font-size: 17px; }
+footer.site .notes { display: grid; gap: 4px; opacity: .85; }
+</style>
+</head>
+<body>
+
+<div class="testbar" lang="ja"><div class="wrap"><a href="#trial"><span>いま、いっしょに試してくださる学校を探しています。</span><span aria-hidden="true">→</span></a></div></div>
+
+<header class="site-head" lang="ja">
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="co">FOQUS</span><span>キャリアを経営する</span></a>
+    <nav class="nav" aria-label="ページ内の移動">
+      <a href="#about">この講座について</a><a href="#lesson">1回の授業</a><a href="#course">12回の流れ</a><a href="#materials">教材</a><a href="#formats">講座の組み方</a><a href="#price">料金</a>
+    </nav>
+  </div>
+</header>
+
+<a class="side-cta" href="#contact" lang="ja">体験会を相談する</a>
+
+<main id="top" lang="ja">
+<!-- ヒーロー：写真全面＋白抜きの大見出し。説明は置かない -->
+<section class="hero" aria-labelledby="h-hero">
+  <div class="hero-bg"><img src="img/hero-main.webp" alt="" width="1920" height="1080" fetchpriority="high"></div>
+  <div class="hero-in">
+    <div class="hero-title">
+      <!-- 大見出しの案　A：わたしという、<br>会社をはじめる。（いまはA）　B：元手は、<br>もう持っている。　C：探すのをやめて、<br>経営してみる。 -->
+      <h1 id="h-hero">わたしという、<br>会社をはじめる。</h1>
+      <svg class="hand-circle" viewBox="0 0 600 260" preserveAspectRatio="none" aria-hidden="true"><path d="M70 150 C 44 92, 150 34, 300 28 C 452 22, 578 70, 570 136 C 562 204, 440 240, 292 236 C 150 232, 34 200, 40 142 C 44 104, 92 74, 150 58"/></svg>
+    </div>
+    <a class="more" href="#about"><span>この講座について</span><span class="ar" aria-hidden="true">→</span></a>
+  </div>
+</section>
+
+<!-- PICKUP：興味の入口を4つ -->
+<section class="pt-xl" id="pickup" aria-labelledby="h-pick">
+  <div class="wrap pick">
+    <div class="pick-head"><h2 id="h-pick">PICKUP</h2><p>注目の情報</p></div>
+    <div class="pick-cards">
+      <a class="pcard" href="#lesson"><img src="img/group-work.webp" alt="" width="1200" height="675" loading="lazy"><span class="pc-in"><span class="pc-t">50分の授業を、<br>のぞいてみる</span><span class="pc-l"><span>授業を見る</span><span class="ar" aria-hidden="true">→</span></span></span></a>
+      <a class="pcard" href="#materials"><img src="img/workbook-single.webp" alt="" width="1200" height="1200" loading="lazy"><span class="pc-in"><span class="pc-t">教材の中身を、<br>見てみる</span><span class="pc-l"><span>教材を見る</span><span class="ar" aria-hidden="true">→</span></span></span></a>
+      <a class="pcard" href="#course"><img src="img/workbook-three-years.webp" alt="" width="1200" height="675" loading="lazy"><span class="pc-in"><span class="pc-t">12回で、<br>どこまで進むのか</span><span class="pc-l"><span>流れを見る</span><span class="ar" aria-hidden="true">→</span></span></span></a>
+      <a class="pcard" href="#faq-prep"><img src="img/teacher-student.webp" alt="" width="1200" height="675" loading="lazy"><span class="pc-in"><span class="pc-t">先生の準備は、<br>どれくらいか</span><span class="pc-l"><span>答えを見る</span><span class="ar" aria-hidden="true">→</span></span></span></a>
+    </div>
+  </div>
+</section>
+
+<!-- 吹き出しの問い＋3ステップ -->
+<section class="about pt-l pb-l" id="about" aria-labelledby="h-about">
+  <div class="wrap">
+    <p class="bubble">この講座は、何が違うのか？</p>
+    <h2 id="h-about">のぞく<span class="x">×</span>つくる<span class="x">×</span>じぶん　の<span class="marker">3ステップ</span>で<br>会社の見方を、自分に向ける</h2>
+    <div class="arcs">
+      <div class="arc">
+        <svg viewBox="0 0 200 200" aria-hidden="true"><path d="M100 4 A 96 96 0 1 1 22 46"/></svg>
+        <div class="arc-in"><small>実在の会社</small><b>のぞく</b><span>身近な会社が、どうやってお金を得ているかを、なぞときで見る</span></div>
+      </div>
+      <span class="arc-x" aria-hidden="true">×</span>
+      <div class="arc">
+        <svg viewBox="0 0 200 200" aria-hidden="true"><path d="M178 54 A 96 96 0 1 1 132 9"/></svg>
+        <div class="arc-in"><small>クラスカンパニー</small><b>つくる</b><span>4〜5人のチームの会社で、同じ考え方を使ってみる</span></div>
+      </div>
+      <span class="arc-x" aria-hidden="true">×</span>
+      <div class="arc">
+        <svg viewBox="0 0 200 200" aria-hidden="true"><path d="M150 182 A 96 96 0 1 1 186 140"/></svg>
+        <div class="arc-in"><small>わたし株式会社</small><b>じぶん</b><span>同じ見方で自分を見て、キャリア計画書に書き写す</span></div>
+      </div>
+    </div>
+    <p class="eq"><span>＝</span>自分を、組み立てる</p>
+  </div>
+</section>
+
+<!-- 対象 -->
+<section class="white" id="for" aria-labelledby="h-for">
+  <div class="wrap">
+    <p class="sec-label">だれの、どんな困りごとに</p>
+    <h2 class="sec" id="h-for">「やりたいことは？」で止まっているキャリアの時間を、動かします</h2>
+    <p class="sec-lead">いま持っているもの（ヒト・モノ・カネ）を、数えるところから始めます。会社が事業を育てるやり方で、自分の次の一手を決めます。やりたいことは、探しません。</p>
+    <div class="aud">
+      <article class="aud-card">
+        <figure class="aud-ph"><img src="img/for-teacher.webp" alt="" width="1600" height="1200" loading="lazy"></figure>
+        <header><p class="who">先生<small>高校の「総合的な探究の時間」、大学のキャリア科目</small></p></header>
+        <div class="block"><h3>こんなことはありませんか</h3>
+          <ul class="pain"><li>キャリアの授業が、自己分析シートと職業調べで終わってしまう</li><li>「やりたいことが分からない」生徒に、次の一歩を示しにくい</li></ul></div>
+        <div class="block gain"><h3>この講座では</h3>
+          <ul><li>分単位の時間割と、先生がそのまま読めることばまで書いた授業案があります</li><li>毎回同じ型（のぞく→つくる→じぶん）です。2回目から、生徒が自分で動けます</li><li>評価は3観点のルーブリック。評価に入れないものまで決めてあります</li></ul></div>
+        <footer><a class="more" href="#formats"><span>学校での組み方を見る</span><span class="ar" aria-hidden="true">→</span></a></footer>
+      </article>
+      <article class="aud-card">
+        <figure class="aud-ph"><img src="img/for-hr.webp" alt="" width="1600" height="1200" loading="lazy"></figure>
+        <header><p class="who">人事・研修担当者<small>入社3年目〜中堅社員の研修、キャリア面談</small></p></header>
+        <div class="block"><h3>こんなことはありませんか</h3>
+          <ul class="pain"><li>研修がその日で終わり、職場に戻ると何も残らない</li><li>キャリア自律を求めても、1on1が形だけになりやすい</li></ul></div>
+        <div class="block gain"><h3>この講座では</h3>
+          <ul><li>半日×2回と振り返り会、1on1×3回。3か月後と1年後に、本人が計画書を書き足します</li><li>1on1は、上司がそのまま読める問いと「上司がしないこと」つきです</li><li>計画書の書き足し率など、自社で定義できる指標の候補を用意しています</li></ul></div>
+        <footer><a class="more" href="#checks"><span>人事担当者が確かめたいことを見る</span><span class="ar" aria-hidden="true">→</span></a></footer>
+      </article>
+      <article class="aud-card">
+        <figure class="aud-ph"><img src="img/for-learner.webp" alt="" width="1600" height="1200" loading="lazy"></figure>
+        <header><p class="who">参加する人<small>生徒・学生・社会人</small></p></header>
+        <div class="block"><h3>こんなことはありませんか</h3>
+          <ul class="pain"><li>「やりたいことは？」と聞かれても、答えられない</li><li>自己分析をしても、次に何をすればいいか分からない</li></ul></div>
+        <div class="block gain"><h3>この講座では</h3>
+          <ul><li>身近な会社のなぞときから入ります。自分の話は、あとからで大丈夫です</li><li>チームで架空の会社を動かしてから、同じ見方を自分に当てはめます</li><li>毎回「今日の一手」を1つ選び、次の授業で結果を書きます。やらなかった理由も材料になります</li></ul></div>
+        <footer><a class="more" href="#lesson"><span>1回の授業を体験してみる</span><span class="ar" aria-hidden="true">→</span></a></footer>
+      </article>
+    </div>
+  </div>
+</section>
+
+<figure class="bleed"><img src="img/ichite-bakery.webp" alt="" width="1920" height="1080" loading="lazy"></figure>
+
+<!-- 約束 -->
+<section class="promise pt-l pb-l" aria-labelledby="h-promise">
+  <div class="wrap">
+    <div>
+      <p class="sec-label">このワークブックの約束</p>
+      <h2 id="h-promise">最初のページに、こう書いてあります</h2>
+      <div class="side">
+        <p>キャリアは「探すもの」ではなく「経営するもの」と考えます。会社は元手を数え、小さく試し、毎年計画を書き直します。自分の計画も、同じように書き足していきます。</p>
+        <p>記入例は、わざと「途中の答え」にしてあります。正解は示さず、診断やタイプ分けもしません。</p>
+      </div>
+      <figure class="promise-photo"><img src="img/hero-sub.webp" alt="" width="1200" height="1600" loading="lazy"></figure>
+    </div>
+    <div>
+      <blockquote class="vow">
+        <p>やりたいことが、見つかっていなくて構いません。<br>むしろ、探すのをやめましょう。<br>代わりに、いま持っているものを並べることから始めます。</p>
+        <p>3年後、まったく違うことを書いていても構いません。<br>むしろ、それが普通です。<br>大事なのは、何が変わったかを知ることです。<br>変わり方には、その人らしさが出ます。</p>
+      </blockquote>
+      <p class="vow-src">ワークブック「はじめに」より（原文のまま）</p>
+    </div>
+  </div>
+</section>
+
+<!-- 1回の授業 -->
+<section class="white pt-l" id="lesson" aria-labelledby="h-lesson">
+  <div class="wrap">
+    <p class="sec-label">1回の授業</p>
+    <h2 class="sec" id="h-lesson">50分の授業は、いつも同じ形です</h2>
+    <p class="sec-lead">実在の会社、チームでつくる会社、自分、と少しずつ自分に寄せていきます。同じ形を、12回くり返します。2回目からは、説明が少なくても動けます。</p>
+
+    <div class="bar" role="img" aria-label="50分の内訳：前回の一手2分、出来事カード3分、のぞく11分、つくる16分、じぶん11分、今日の一手2分、計画書とステータス5分">
+      <div class="s0" style="flex:2">2</div><div class="s0" style="flex:3">3</div><div class="s1" style="flex:11">11分</div><div class="s2" style="flex:16">16分</div><div class="s3" style="flex:11">11分</div><div class="s0" style="flex:2">2</div><div class="s0" style="flex:5">5分</div>
+    </div>
+    <div class="bar-key">
+      <div><i class="k0"></i><span class="m">2分</span><b>前回の一手</b>やってみた？どうだった？</div>
+      <div><i class="k0"></i><span class="m">3分</span><b>出来事カード</b>チームでめくって30秒</div>
+      <div><i class="k1"></i><span class="m">11分</span><b>STEP1 のぞく</b>実在の会社のなぞとき</div>
+      <div><i class="k2"></i><span class="m">16分</span><b>STEP2 つくる</b>4〜5人のチームの会社で</div>
+      <div><i class="k3"></i><span class="m">11分</span><b>STEP3 じぶん</b>同じ見方を自分に</div>
+      <div><i class="k0"></i><span class="m">2分</span><b>今日の一手</b>次までに1つだけ</div>
+      <div><i class="k0"></i><span class="m">5分</span><b>計画書・ステータス</b>書き写して、塗る</div>
+    </div>
+    <div class="step-ph">
+      <figure class="s1"><img src="img/step-look.webp" alt="" width="1600" height="1200" loading="lazy"></figure>
+      <figure class="s2"><img src="img/step-make.webp" alt="" width="1600" height="1200" loading="lazy"></figure>
+      <figure class="s3"><img src="img/step-me.webp" alt="" width="1200" height="1600" loading="lazy"></figure>
+    </div>
+
+    <div class="demo" id="demo">
+      <div class="demo-head">
+        <span class="lesson-tag">LESSON 02</span>
+        <h3>メルカリは、なぜ「つなぐ」だけでお金になる？</h3>
+        <p>ACT 1 会社をのぞく｜ヒト<br>実際のワークブックの第2回を、そのまま体験できます。</p>
+      </div>
+      <div class="tabs" role="tablist" aria-label="授業の段階">
+        <button class="tab" role="tab" id="t0" aria-controls="p0" aria-selected="false" tabindex="-1"><small>0〜5分</small>はじめの5分</button>
+        <button class="tab" role="tab" id="t1" aria-controls="p1" aria-selected="true"><small>5〜16分</small>STEP1 のぞく</button>
+        <button class="tab" role="tab" id="t2" aria-controls="p2" aria-selected="false" tabindex="-1"><small>16〜32分</small>STEP2 つくる</button>
+        <button class="tab" role="tab" id="t3" aria-controls="p3" aria-selected="false" tabindex="-1"><small>32〜43分</small>STEP3 じぶん</button>
+        <button class="tab" role="tab" id="t4" aria-controls="p4" aria-selected="false" tabindex="-1"><small>43〜50分</small>最後の7分</button>
+      </div>
+
+      <div class="panel" role="tabpanel" id="p0" aria-labelledby="t0" hidden>
+        <div class="col">
+          <p class="lab">前回の一手（2分）</p>
+          <div class="say"><b>先生のことば</b>「前回の一手、やってみた人？　どうだった？」</div>
+          <p>2〜3人に話してもらえば十分です。やっていない人を責めません。「やらなかった理由も材料です」と返します。理由は、ワークブックの一手の欄に書いてもらいます。</p>
+          <p class="lab" style="margin-top:8px">出来事カード（3分）</p>
+          <p>その回のカードを伏せたまま各チームに配り、めくって30秒話します。その回の問いへの入口になるカードです。点や元手は動かず、運で何かが決まることもありません。</p>
+        </div>
+        <div class="col">
+          <div class="evcard">
+            <div class="top"><span class="pill">LESSON 02｜つなぐ</span><span>授業の出来事</span></div>
+            <p class="txt">近くのお店の人から、「若い人に、店を知ってもらう方法がない」と相談された。</p>
+            <p class="ask">チームで30秒：あなたたちが間に立って、つなげそうな人たちはだれ？</p>
+          </div>
+          <div class="say"><b>先生のことば（ミッションへつなぐ）</b>「今日は、つなぐだけでお金が生まれる会社を見ます」</div>
+        </div>
+      </div>
+
+      <div class="panel" role="tabpanel" id="p1" aria-labelledby="t1">
+        <div class="col">
+          <p class="lab">なぞ｜メルカリ</p>
+          <p class="quiz-q">メルカリは、自分では商品を作っていません。では、どこからお金を得ているでしょう？</p>
+          <p class="hint">予想で選んでみてください。</p>
+          <div class="choices" id="choices">
+            <button class="choice" data-k="A" type="button"><b>A</b>アプリの広告</button>
+            <button class="choice" data-k="B" type="button"><b>B</b>売れたときの手数料</button>
+            <button class="choice" data-k="C" type="button"><b>C</b>出品するときの登録料</button>
+          </div>
+          <div class="answer wait" id="answer" aria-live="polite">
+            <p>選ぶと、こたえと「確かめた事実」が出ます。</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="diagram" aria-label="図：売りたい人がメルカリに出品し、買いたい人が見つける。代金はメルカリを通り、手数料を引いて売りたい人に届く">
+            <svg viewBox="0 0 640 250" role="img">
+              <defs>
+                <marker id="ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah-g"/></marker>
+                <marker id="am" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah-m"/></marker>
+              </defs>
+              <rect class="node" x="14" y="80" width="150" height="90"/>
+              <text class="t" x="89" y="120" text-anchor="middle">売りたい人</text>
+              <text class="s" x="89" y="144" text-anchor="middle">使わなくなった物がある</text>
+              <rect class="center" x="245" y="70" width="150" height="110"/>
+              <text class="t" x="320" y="118" text-anchor="middle">メルカリ</text>
+              <text class="s" x="320" y="142" text-anchor="middle">出会う場をつくる</text>
+              <rect class="node" x="476" y="80" width="150" height="90"/>
+              <text class="t" x="551" y="120" text-anchor="middle">買いたい人</text>
+              <text class="s" x="551" y="144" text-anchor="middle">安く手に入れたい</text>
+              <path class="goods" d="M120 80 C 160 30, 220 30, 258 66" marker-end="url(#ag)"/>
+              <text class="al ag" x="180" y="34" text-anchor="middle">出品</text>
+              <path class="goods" d="M382 66 C 420 30, 480 30, 520 80" marker-end="url(#ag)"/>
+              <text class="al ag" x="455" y="34" text-anchor="middle">見つかる</text>
+              <path class="money" d="M520 170 C 480 220, 420 220, 382 184" marker-end="url(#am)"/>
+              <text class="al am" x="455" y="232" text-anchor="middle">代金</text>
+              <path class="money" d="M258 184 C 220 220, 160 220, 120 170" marker-end="url(#am)"/>
+              <text class="al am" x="185" y="232" text-anchor="middle">代金 − 手数料</text>
+            </svg>
+          </div>
+          <div class="term"><div class="tl">会社のことば<small>ことば図鑑 No.02</small></div><div class="tb"><b>プラットフォーム（つなぐ場）</b><br>つながっていない二つの集まりの間に立ち、両方をつなぐ「場」。つなぐ人がいるだけで、両方に得が生まれることがあります。</div></div>
+        </div>
+      </div>
+
+      <div class="panel" role="tabpanel" id="p2" aria-labelledby="t2" hidden>
+        <div class="col">
+          <p class="lab">クラスカンパニーで、つながっていない二つをつないでみます</p>
+          <p>第1回に立ち上げた4〜5人の会社で、会社の見方をそのまま使ってみます。役割は1年を3つの期に分けて交代します。</p>
+          <div class="roles"><span>社長</span><span>お金係</span><span>お客さん係</span><span>つくる係</span></div>
+          <div class="steps3">
+            <div><span class="n">1</span><b>二つを探す</b>文化祭の中で、出会っていない二つのグループ</div>
+            <div><span class="n">2</span><b>得を書く</b>つながると、それぞれに何の得があるか</div>
+            <div><span class="n">3</span><b>入るものを考える</b>つないだ自分たちに何が入るか（お金でなくてもよい）</div>
+          </div>
+        </div>
+        <div class="col">
+          <dl class="sheet">
+            <div><dt>つなぐ二つ</dt><dd>例：地域のパン屋さん と 部活帰りの高校生</dd></div>
+            <div><dt>それぞれの得</dt><dd>（チームで書く）</dd></div>
+            <div><dt>自分たちに入るもの</dt><dd>（チームで書く）</dd></div>
+          </dl>
+          <p class="hint">比べるのは、自分たちの前の期とだけです。チームどうしで成果を比べることはしません。</p>
+        </div>
+      </div>
+
+      <div class="panel" role="tabpanel" id="p3" aria-labelledby="t3" hidden>
+        <div class="col">
+          <p class="lab">同じ見方を、自分に当てはめてみる</p>
+          <div class="q-card">
+            <div class="qh"><div class="qn">2-1<small>問い</small></div><p class="qt">家族以外で、自分のことを知っている大人は何人いますか。名前か呼び方を書き出してみませんか。</p></div>
+            <p class="ex"><b>ミナト（途中の答え）</b>部活の顧問、パン屋の人……2人？　近所のおばさんは入るのかな。</p>
+          </div>
+          <div class="q-card">
+            <div class="qh"><div class="qn">2-2<small>問い</small></div><p class="qt">あなたが入っている集まりのうち、お互いをほとんど知らない二つはどれとどれですか。つながると、どちらかに得はありそうですか。</p></div>
+            <p class="ex"><b>ソラ（途中の答え）</b>軽音部とバイト先。店長がイベントをやりたいと言っていた。……つないだら面倒かも。</p>
+          </div>
+        </div>
+        <div class="col">
+          <p class="lab">答えは書き直さず、年ごとに書き足します</p>
+          <div class="ver">
+            <div><span>第1版（1年）</span><em>鉛筆で書く</em></div>
+            <div><span>第2版（2年）</span><em>青で書き足す。前の版は消さない</em></div>
+            <div><span>第3版（3年）</span><em>緑で書き足す。変わったところに印をつける</em></div>
+          </div>
+          <p class="hint">記入例の3人（ミナト・ハル・ソラ）は架空の生徒です。答えはわざと不完全にしてあり、まねをする見本ではありません。</p>
+        </div>
+      </div>
+
+      <div class="panel" role="tabpanel" id="p4" aria-labelledby="t4" hidden>
+        <div class="col">
+          <div class="ichite">
+            <p class="h">【今日の一手】次の授業までに、1つだけやってみること</p>
+            <label><input type="checkbox" id="ich1"><span>家族以外の大人1人に、自分から名前を名乗ってあいさつする</span><span class="g">ヒト</span></label>
+            <label><input type="checkbox" id="ich2"><span>二つの集まりをつなぐときに使えそうなもの（場所・連絡のしかた）を、1つ見つける</span><span class="g">モノ</span></label>
+            <label><input type="checkbox" id="ich3"><span>1週間で、人と話すのに使った時間を数えてみる</span><span class="g">カネ</span></label>
+            <label><input type="checkbox" id="ich4"><span>自分で決める：（　　　　　　　　）</span><span class="g">自由</span></label>
+            <p class="res">次の授業のはじめに書く：□ やってみた → どうだった？　□ やらなかった → 理由</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="planblock"><div class="pl"><small>キャリア計画書</small>ブロック 02</div><div class="pt">今日の答えから1〜2行を選んで、計画書の「メンバーとつなぎ役」に書き写します。巻頭のステータスも更新します。</div></div>
+          <div class="enjoy"><b>楽しみ度</b><span>次の授業が楽しみ</span><span class="scale" id="enjoy"><button type="button" aria-pressed="false">5</button><button type="button" aria-pressed="false">4</button><button type="button" aria-pressed="false">3</button><button type="button" aria-pressed="false">2</button><button type="button" aria-pressed="false">1</button></span><span>そうでもない</span></div>
+          <p class="hint">楽しみ度は、無記名の付箋でも集めます。先生が授業を直すための数字で、成績には使いません。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12回 -->
+<section class="course pb-l" id="course" aria-labelledby="h-course">
+  <figure class="bleed"><img src="img/workbook-three-years.webp" alt="" width="1200" height="675" loading="lazy"></figure>
+  <div class="wrap first">
+    <div class="course-top">
+      <div class="course-head">
+        <p class="sec-label">12回の流れ</p>
+        <h2 class="sec" id="h-course">12回で、キャリア計画書が積み上がります</h2>
+        <p class="sec-lead">1回ごとに、巻末の計画書の1ブロックを書きます。ACTが進むと、ブロックが解放されます。第5・9・12回のあとは、1コマ丸ごと「決算」の回です。</p>
+        <div class="status-ctrl">
+          <label for="lessonRange"><span>授業を進めてみる</span><b id="rangeLabel">第5回（決算 第1期）まで</b></label>
+          <input type="range" id="lessonRange" min="1" max="12" value="5" step="1">
+          <p class="unlock" id="unlockMsg" aria-live="polite"></p>
+          <p class="note">記入例：架空の生徒「ミナト」の1年目。ワークブックの巻頭にあるこの画面を、毎回の最後の5分に鉛筆で塗ります。斜線のブロックは、まだ解放されていない回の分です。</p>
+        </div>
+      </div>
+
+      <figure class="paper" aria-labelledby="st-title">
+        <div class="paper-top"><b>巻頭</b><span>ワークブック 高校生版</span></div>
+        <div class="status">
+          <div class="status-head"><strong id="st-title">わたし株式会社</strong><em>ステータス</em><span class="en">STATUS</span></div>
+          <div class="status-body">
+            <div class="status-meta"><span>社名 <b>ミナト・ナビ（仮）</b></span><span>設立日 <b>第1回の授業の日</b></span></div>
+            <div class="g-row"><div class="k">ヒト<small>家族以外で<br>自分を知る大人</small></div><svg class="gauge" data-g="hito" viewBox="0 0 216 20" aria-hidden="true"></svg><div class="v">はじめ <span class="num">2</span>人<br>いま <b class="num" id="v-hito">3</b>人</div></div>
+            <div class="g-row"><div class="k">モノ<small>持ち札の数</small></div><svg class="gauge" data-g="mono" viewBox="0 0 216 20" aria-hidden="true"></svg><div class="v">はじめ <span class="num">1</span>つ<br>いま <b class="num" id="v-mono">3</b>つ</div></div>
+            <div class="g-row"><div class="k">カネ<small>1週間で自由に<br>使える時間</small></div><svg class="gauge" data-g="kane" viewBox="0 0 216 20" aria-hidden="true"></svg><div class="v">はじめ <span class="num">8</span>時間<br>いま <b class="num" id="v-kane">8</b>時間</div></div>
+            <div class="p-row"><div class="k">計画書</div><svg class="gauge boxes" id="b-plan" viewBox="0 0 252 20" aria-hidden="true"></svg><div class="v num"><span id="v-plan">5</span>/12</div></div>
+            <div class="p-row"><div class="k">ことば</div><svg class="gauge boxes words" id="b-word" viewBox="0 0 252 20" aria-hidden="true"></svg><div class="v num"><span id="v-word">4</span>/12</div></div>
+            <div class="track" id="track" aria-label="進行すごろく"></div>
+          </div>
+        </div>
+        <p class="paper-foot">2</p>
+      </figure>
+    </div>
+
+    <div class="acts">
+      <div class="act-row p">
+        <div class="act-name"><span class="en">PROLOGUE</span><b>プロローグ</b><span>会社を動かしてみる</span></div>
+        <div class="lessons">
+          <article class="les c-pro"><div class="band-h"><span>LESSON 01</span></div><div class="bd"><h3>会社は、元手が尽きたら終わる</h3><dl><div><dt>のぞく</dt><dd>カードゲーム「元手と冒険」で、6ラウンド会社を動かす</dd></div><div><dt>ことば</dt><dd>ランウェイ（滑走路の残り）</dd></div></dl><p class="blk">ブロック 01 表紙｜わたし株式会社を設立する</p></div></article>
+        </div>
+      </div>
+      <div class="act-row a1">
+        <div class="act-name"><span class="en">ACT 1</span><b>会社をのぞく</b><span>ヒト・モノ・カネの見方を知る</span></div>
+        <div class="lessons">
+          <article class="les c-look"><div class="band-h"><span>LESSON 02</span></div><div class="bd"><h3>メルカリは、なぜ「つなぐ」だけでお金になる？</h3><dl><div><dt>のぞく</dt><dd>メルカリ</dd></div><div><dt>ことば</dt><dd>プラットフォーム</dd></div></dl><p class="blk">ブロック 02 メンバーとつなぎ役</p></div></article>
+          <article class="les c-look"><div class="band-h"><span>LESSON 03</span></div><div class="bd"><h3>ユニクロは、服を考えるところから売るところまで</h3><dl><div><dt>のぞく</dt><dd>ユニクロ</dd></div><div><dt>ことば</dt><dd>バリューチェーン</dd></div></dl><p class="blk">ブロック 03 主な活動</p></div></article>
+          <article class="les c-look"><div class="band-h"><span>LESSON 04</span></div><div class="bd"><h3>ハローキティとポケモンは、なぜ長く愛されつづける？</h3><dl><div><dt>のぞく</dt><dd>サンリオ・ポケモン</dd></div><div><dt>ことば</dt><dd>VRIO・経験曲線</dd></div></dl><p class="blk">ブロック 04 強み</p></div></article>
+          <article class="les c-look"><div class="band-h"><span>LESSON 05</span><span class="k">決算 第1期</span></div><div class="bd"><h3>任天堂は、なぜ「次の一手」を打ち続けられる？</h3><dl><div><dt>のぞく</dt><dd>任天堂</dd></div><div><dt>ことば</dt><dd>機会費用・複利</dd></div></dl><p class="blk">ブロック 05 運転資金</p></div></article>
+        </div>
+      </div>
+      <div class="act-row a2">
+        <div class="act-name"><span class="en">ACT 2</span><b>会社をつくる</b><span>お客さんを決め、話を聞き、戦う場所を決める</span></div>
+        <div class="lessons">
+          <article class="les c-make"><div class="band-h"><span>LESSON 06</span></div><div class="bd"><h3>コンビニのコーヒーは、何のために「雇われて」いる？</h3><dl><div><dt>のぞく</dt><dd>セブン-イレブン</dd></div><div><dt>ことば</dt><dd>ジョブ理論・狩野モデル</dd></div></dl><p class="blk">ブロック 06 お客さんと用事</p></div></article>
+          <article class="les c-make"><div class="band-h"><span>LESSON 07</span></div><div class="bd"><h3>会社は「意見」ではなく「あったこと」を聞く</h3><dl><div><dt>のぞく</dt><dd>聞き方の本・無印良品</dd></div><div><dt>ことば</dt><dd>マム・テスト</dd></div></dl><p class="blk">ブロック 07 現場の声</p></div></article>
+          <article class="les c-make"><div class="band-h"><span>LESSON 08</span></div><div class="bd"><h3>QBハウスは、何を「やめた」から選ばれる？</h3><dl><div><dt>のぞく</dt><dd>QBハウス・セイコーマート</dd></div><div><dt>ことば</dt><dd>ERRC・範囲をしぼる</dd></div></dl><p class="blk">ブロック 08 戦う場所</p></div></article>
+          <article class="les c-make"><div class="band-h"><span>LESSON 09</span><span class="k">決算 第2期</span></div><div class="bd"><h3>スターバックスを、9つの箱で描いてみる</h3><dl><div><dt>のぞく</dt><dd>スターバックス</dd></div><div><dt>ことば</dt><dd>ビジネスモデル・キャンバス</dd></div></dl><p class="blk">ブロック 09 ビジネスモデル</p></div></article>
+        </div>
+      </div>
+      <div class="act-row a3">
+        <div class="act-name"><span class="en">ACT 3</span><b>自分を経営する</b><span>小さく試し、向きを変え、3年の計画を立てる</span></div>
+        <div class="lessons">
+          <article class="les c-me"><div class="band-h"><span>LESSON 10</span></div><div class="bd"><h3>完成させる前に、小さく出してみる</h3><dl><div><dt>のぞく</dt><dd>Dropbox・7pay</dd></div><div><dt>ことば</dt><dd>MVP・ステージゲート</dd></div></dl><p class="blk">ブロック 10 試す計画と撤退ライン</p></div></article>
+          <article class="les c-me"><div class="band-h"><span>LESSON 11</span></div><div class="bd"><h3>任天堂とNetflixは、何を残して、何を変えてきた？</h3><dl><div><dt>のぞく</dt><dd>任天堂・Netflix</dd></div><div><dt>ことば</dt><dd>ピボット</dd></div></dl><p class="blk">ブロック 11 結果と方向転換</p></div></article>
+          <article class="les c-me"><div class="band-h"><span>LESSON 12</span><span class="k">決算 第3期</span></div><div class="bd"><h3>会社は3年先の計画を立て、毎年書き直す</h3><dl><div><dt>のぞく</dt><dd>サンリオの中期経営計画</dd></div><div><dt>ことば</dt><dd>中期経営計画</dd></div></dl><p class="blk">ブロック 12 3年計画｜第1版の完成</p></div></article>
+        </div>
+      </div>
+    </div>
+    <div class="course-foot">
+    <figure><img src="img/kessan-talk.webp" alt="" width="1920" height="1080" loading="lazy"></figure>
+    <div class="note-box">
+      <div><h3>実在の会社の取り上げ方</h3><p>公開資料から、お金の流れ・持ち札・やめたことを図にします。使うのは、決算資料や公式ページです。続けた例と、やめた例の両方を入れます。やめた例は、7pay の終了や Netflix の DVD 事業の終了です。数字には時点と出典をつけ、授業の前に最新の値を確かめます。ロゴや商品写真、人物の成功物語は使いません。取り上げる会社と FOQUS に、提携や協賛の関係はありません。</p></div>
+      <div><h3>2年目・3年目（案）</h3><p>高校の2年次は全8回で、第2版（青）を書き足します。3年次は全6回で、第3版（緑）を書き足します。2年次の第1回は、1年前に封をした「来年の自分への手紙」を開ける回です。大学生版・社会人版も、同じ12回です。書き足す時期は、大学生版が学期の終わりと1年後です。社会人版は、3か月後と1年後です。</p></div>
+    </div>
+    </div>
+  </div>
+</section>
+
+<!-- 変わっていい（深緑の1画面） -->
+<section class="change" aria-label="変わっていい">
+  <div class="wrap">
+    <p>3年後、まったく違うことを書いていても構いません。<br>むしろ、それが普通です。</p>
+    <p>大事なのは、何が変わったかを知ることです。</p>
+  </div>
+</section>
+
+<!-- 仕掛け -->
+<section class="white pt-l pb-l" id="mechanics" aria-labelledby="h-mech">
+  <div class="wrap">
+    <p class="sec-label">続けたくなる仕掛け</p>
+    <h2 class="sec" id="h-mech">次の授業が、少し楽しみになる6つの仕掛け</h2>
+    <p class="sec-lead">ゲームの要素は、計画書を書き続けるための道具として使います。主役は、3年間積み上がるキャリア計画書です。</p>
+    <div class="mech">
+      <article class="mc"><p class="when">巻頭｜毎回の最後の5分</p><h3>ステータス画面</h3><p>ヒト・モノ・カネのゲージと実数、計画書とことばの数、進み具合。鉛筆で塗るだけです。自分の変化が、1ページで見えます。</p></article>
+      <article class="mc"><p class="when">毎回の STEP3 のあと</p><h3>今日の一手</h3><p>次の授業までに1つだけやってみること。3つから選ぶか、自分で決めます。次の授業のはじめに「やってみた／やらなかった」と理由を書きます。</p></article>
+      <article class="mc"><p class="when">毎回の最初の3分</p><h3>授業の出来事カード</h3><p>その回のテーマにつながる出来事を、チームでめくって30秒話します。カードは回ごとに決まっていて、点や元手は動きません。</p></article>
+      <figure class="mc-photo"><img src="img/card-game.webp" alt="" width="1200" height="675" loading="lazy"></figure>
+      <article class="mc"><p class="when">第5・9・12回のあと｜1コマ丸ごと</p><h3>決算の回</h3><p>チームで「この期、何が変わったか」を90秒で話します。いくら稼いだかは発表しません。比べるのは、自分たちの前の期とだけです。</p></article>
+      <article class="mc"><p class="when">巻末｜12枠</p><h3>ことば図鑑</h3><p>12枠は「？？？」から始まります。会社のことばを自分の例に当てはめられたら獲得です。獲得の数は比べません。</p></article>
+      <article class="mc"><p class="when">第12回の最後</p><h3>来年の自分への手紙</h3><p>「いま一番気になっていること」などを書き、のりしろで封をします。開けるのは1年後の最初の授業で、そこから第2版を書き始めます。</p></article>
+      <figure class="mc-photo"><img src="img/letter.webp" alt="" width="1200" height="1200" loading="lazy"></figure>
+    </div>
+    <div class="never">
+      <h3>しないこと</h3>
+      <ul>
+        <li><s>診断・タイプ分け</s></li>
+        <li><s>正解の提示</s>（記入例は途中の答え）</li>
+        <li><s>チームどうしの点数・順位・投票</s></li>
+        <li><s>運だけで結果が決まる仕掛け</s></li>
+        <li><s>成功者の物語で憧れさせる</s></li>
+        <li><s>子どもっぽい絵やキャラクター</s>（社会人も同じ紙面）</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 教材 -->
+<section class="pt-l" id="materials" aria-labelledby="h-mat">
+  <div class="wrap">
+    <div class="mat-head">
+      <div>
+        <p class="sec-label">教材のページ</p>
+        <h2 class="sec" id="h-mat">実際のワークブックを見てください</h2>
+        <p class="sec-lead">高校生版 v3（A4・73ページ）から抜き出しました。大学生版・社会人版も同じ紙面で、問いの言い回しと記入例が違います。押すと拡大します。</p>
+      </div>
+      <figure><img src="img/workbook-single.webp" alt="" width="1200" height="1200" loading="lazy"></figure>
+    </div>
+    <div class="gallery" id="gallery">
+      <button class="g-item" type="button" data-src="img/hs01.jpg"><span class="ph"><img src="img/hs01.jpg" alt="ワークブック高校生版の表紙" loading="lazy"></span><span class="tg">p.1</span><b>表紙</b><span>12ブロックが1つずつ埋まっていく、と最初に見せます</span></button>
+      <button class="g-item" type="button" data-src="img/hs02.jpg"><span class="ph"><img src="img/hs02.jpg" alt="巻頭のステータス画面" loading="lazy"></span><span class="tg">p.2</span><b>ステータス画面</b><span>ヒト・モノ・カネのゲージと、進行すごろく</span></button>
+      <button class="g-item" type="button" data-src="img/hs06.jpg"><span class="ph"><img src="img/hs06.jpg" alt="LESSON01のページ" loading="lazy"></span><span class="tg">p.6</span><b>LESSON 01 カードゲーム</b><span>元手7枚で6ラウンド、会社を動かしてみる</span></button>
+      <button class="g-item" type="button" data-src="img/hs11.jpg"><span class="ph"><img src="img/hs11.jpg" alt="LESSON02の始まりのページ" loading="lazy"></span><span class="tg">p.11</span><b>LESSON 02 のぞく</b><span>なぞに予想で○をつけ、こたえと事実を読む</span></button>
+      <button class="g-item" type="button" data-src="img/hs12.jpg"><span class="ph"><img src="img/hs12.jpg" alt="LESSON02の図とSTEP2のページ" loading="lazy"></span><span class="tg">p.12</span><b>図・会社のことば・つくる</b><span>お金とモノの流れを同じ描き方で</span></button>
+      <button class="g-item" type="button" data-src="img/hs09.jpg"><span class="ph"><img src="img/hs09.jpg" alt="今日の一手と計画書への書き写しのページ" loading="lazy"></span><span class="tg">p.9</span><b>今日の一手と書き写し</b><span>一手、計画書のブロック、楽しみ度</span></button>
+      <button class="g-item" type="button" data-src="img/hs28.jpg"><span class="ph"><img src="img/hs28.jpg" alt="決算第1期のページ" loading="lazy"></span><span class="tg">p.28</span><b>決算 第1期</b><span>決算表と、90秒で話す「何が変わったか」</span></button>
+      <button class="g-item" type="button" data-src="img/hs69.jpg"><span class="ph"><img src="img/hs69.jpg" alt="ことば図鑑のページ" loading="lazy"></span><span class="tg">p.69</span><b>ことば図鑑</b><span>？？？の12枠を、自分の例で埋めていく</span></button>
+      <button class="g-item" type="button" data-src="img/hs67.jpg"><span class="ph"><img src="img/hs67.jpg" alt="来年の自分への手紙のページ" loading="lazy"></span><span class="tg">p.67</span><b>来年の自分への手紙</b><span>のりしろで封をして、1年後に開ける</span></button>
+      <button class="g-item" type="button" data-src="img/hs70.jpg"><span class="ph"><img src="img/hs70.jpg" alt="キャリア計画書のページ" loading="lazy"></span><span class="tg">p.70〜</span><b>キャリア計画書</b><span>12ブロック×第1〜3版。書き直さず書き足す</span></button>
+      <button class="g-item" type="button" data-src="img/card_one.jpg"><span class="ph" style="aspect-ratio:633/366"><img src="img/card_one.jpg" alt="授業の出来事カード LESSON03" loading="lazy"></span><span class="tg">別冊・11枚</span><b>授業の出来事カード</b><span>A4に同じカード10枚。切って伏せて配る</span></button>
+      <button class="g-item" type="button" data-src="img/take01.jpg"><span class="ph"><img src="img/take01.jpg" alt="体験会の持ち帰る1枚" loading="lazy"></span><span class="tg">体験会</span><b>持ち帰る1枚</b><span>設立証書・ステータスの初期値・今日の一手</span></button>
+    </div>
+  </div>
+</section>
+
+<dialog class="lb" id="lb" lang="ja" aria-label="教材のページの拡大">
+  <div class="lb-in">
+    <div class="lb-img"><img id="lbImg" src="" alt=""></div>
+    <div class="lb-bar"><button type="button" id="lbPrev" aria-label="前のページ">‹</button><p id="lbCap"></p><button type="button" id="lbNext" aria-label="次のページ">›</button><button type="button" id="lbClose">閉じる</button></div>
+  </div>
+</dialog>
+
+<figure class="bleed"><img src="img/riverside-walk.webp" alt="" width="2400" height="1030" loading="lazy"></figure>
+
+<!-- 講座の組み方 -->
+<section class="white" id="formats" aria-labelledby="h-fm">
+  <div class="wrap">
+    <p class="sec-label">講座の組み方</p>
+    <h2 class="sec" id="h-fm">学校でも、大学でも、会社でも</h2>
+    <p class="sec-lead">どの組み方も、12回の中身と計画書は同じです。時間の取り方と、書き足す時期だけが違います。</p>
+    <div class="formats">
+      <article class="fm">
+        <figure class="fm-ph"><img src="img/group-work.webp" alt="" width="1200" height="675" loading="lazy"></figure>
+        <header><p class="kind">高校｜総合的な探究の時間</p><h3>1年次 12回（標準17コマ）</h3><div class="meta"><span>1コマ50分</span><span>4〜5人のクラスカンパニー</span><span>授業案 59ページ</span></div></header>
+        <ol>
+          <li><span class="w">第1回</span><span>2コマ。カードゲーム「元手と冒険」と、わたし株式会社の設立</span></li>
+          <li><span class="w">第2〜5回</span><span>ACT 1 会社をのぞく（第5回は1コマ＋決算）</span></li>
+          <li class="k"><span class="w">決算 第1期</span><span>1コマ丸ごと。90秒で「この期、何が変わったか」</span></li>
+          <li><span class="w">第6〜9回</span><span>ACT 2 会社をつくる。第7回は身近な大人に話を聞く</span></li>
+          <li class="k"><span class="w">決算 第2期</span><span>1コマ丸ごと。役割を交代して次の期へ</span></li>
+          <li><span class="w">第10〜11回</span><span>ACT 3 自分を経営する。小さく試して、やめどきを決める</span></li>
+          <li><span class="w">第12回</span><span>3コマ。発表会、計画書の第1版、決算 第3期と手紙</span></li>
+        </ol>
+        <footer>2年次8回・3年次6回の案つき。15コマに収める短縮の仕方も授業案に書いてあります。</footer>
+      </article>
+      <article class="fm">
+        <figure class="fm-ph"><img src="img/univ-seminar.webp" alt="" width="1920" height="1080" loading="lazy"></figure>
+        <header><p class="kind">大学｜キャリア科目・初年次教育</p><h3>半期 90分×15回</h3><div class="meta"><span>授業のグループ4〜5人</span><span>シラバス案・成績評価案つき</span><span>授業案 53ページ</span></div></header>
+        <ol>
+          <li><span class="w">第1回</span><span>ガイダンスとカードゲーム、チームの立ち上げ</span></li>
+          <li><span class="w">第2〜5回</span><span>ACT 1 会社をのぞく</span></li>
+          <li class="k"><span class="w">第6回</span><span>決算 第1期</span></li>
+          <li><span class="w">第7〜11回</span><span>ACT 2 会社をつくる、ACT 3 の小さな試し</span></li>
+          <li class="k"><span class="w">第12回</span><span>決算 第2期と中間のふり返り</span></li>
+          <li><span class="w">第13〜14回</span><span>向きを変える回、発表会と3年計画、第1版</span></li>
+          <li class="k"><span class="w">第15回</span><span>決算 第3期、学期末の第2版、手紙、期末課題</span></li>
+        </ol>
+        <footer>決算 第2期は、第11回のあとに置いています。試しの期間（2〜3週間）を取るためです。</footer>
+      </article>
+      <article class="fm">
+        <figure class="fm-ph"><img src="img/training.webp" alt="" width="1200" height="675" loading="lazy"></figure>
+        <header><p class="kind">企業研修｜入社3年目〜中堅、管理職にも</p><h3>半日×2回＋振り返り会＋1on1</h3><div class="meta"><span>1回12〜30人</span><span>合計 約11時間半</span><span>研修の台本 17ページ</span></div></header>
+        <ol>
+          <li><span class="w">1日目</span><span>半日（4時間）。第1〜5回と決算 第1期</span></li>
+          <li><span class="w">2日目</span><span>1〜2週間後に半日。第6〜10回、その場での小さな試し</span></li>
+          <li><span class="w">2〜3週間</span><span>職場で小さく試す。関所の日に1on1（1回目）</span></li>
+          <li class="k"><span class="w">約1か月後</span><span>振り返り会 2時間。発表会と計画書の第1版</span></li>
+          <li><span class="w">2・3か月目</span><span>1on1 30分×2。3か月後に第2版を書き足す</span></li>
+          <li><span class="w">1年後</span><span>第3版を書き足す（集まるか、各自で）</span></li>
+        </ol>
+        <footer>半日1回の短縮版もあります（未検証）。同じ部署の人どうしや、上司と部下は、同じテーブルにしません。</footer>
+      </article>
+      <article class="fm">
+        <figure class="fm-ph"><img src="img/taiken-event.webp" alt="" width="1920" height="1080" loading="lazy"></figure>
+        <header><p class="kind">体験会｜説明会・イベント・社内イベント</p><h3>元手と冒険 体験版（50分／90分）</h3><div class="meta"><span>1回で完結</span><span>紙と鉛筆だけ</span><span>持ち帰る1枚つき</span></div></header>
+        <ol>
+          <li><span class="w">はじめ</span><span>経営ボードに鉛筆で帳簿をつけながら、カードゲームで会社を動かす</span></li>
+          <li><span class="w">90分版</span><span>2回戦の前に「やめる基準」を書き、1回戦の自分と比べる</span></li>
+          <li class="k"><span class="w">最後の10分</span><span>「あなたの元手は、いま何ですか」「どこでやめると決めていますか」と自分に戻す</span></li>
+          <li><span class="w">持ち帰る</span><span>設立証書・ステータスの初期値・今日の一手。裏面に12回の続き</span></li>
+        </ol>
+        <footer>導入を決める前の「試食」として使えます。勝ち負けは強調しません。</footer>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- 確かめたいこと -->
+<section id="checks" aria-labelledby="h-ck">
+  <div class="wrap">
+    <p class="sec-label">導入の前に</p>
+    <h2 class="sec" id="h-ck">先生と人事担当者が、確かめておきたいこと</h2>
+    <figure class="wide-ph"><img src="img/teacher-student.webp" alt="" width="1200" height="675" loading="lazy"></figure>
+    <div class="checks">
+      <div class="ck">
+        <h3><span>先生</span>評価と安全</h3>
+        <div class="box">
+          <h4>ルーブリックは3観点です</h4>
+          <div class="rub">
+            <div><b>①</b><p>のぞく：会社の見方を、自分のことに使える<small>知識・技能</small></p></div>
+            <div><b>②</b><p>つくる・試す：決めて、試して、ずれから判断する<small>思考・判断・表現</small></p></div>
+            <div><b>③</b><p>じぶん：書き足し続け、変化をとらえる<small>主体的に学習に取り組む態度</small></p></div>
+          </div>
+          <p class="small">先生用と生徒用があります。生徒は決算の回に自分で○をつけます。</p>
+        </div>
+        <div class="box">
+          <h4>評価に入れないもの</h4>
+          <div class="out-tags"><span>楽しみ度の数字</span><span>今日の一手をやった回数</span><span>ことば図鑑の獲得数</span><span>ステータスのゲージの数</span><span>90秒の発表のうまさ</span></div>
+          <p class="small">見るのは、自分の例に当てはめられているかです。やらなかった理由から、次を決めているかも見ます。</p>
+        </div>
+        <div class="box">
+          <h4>大人に話を聞く回の安全</h4>
+          <p>第7回の宿題や「今日の一手」では、大人に話を聞きます。相手は、保護者や先生が知っている大人に限ります。お金や家族に関わる欄は、書かなくてよい欄としています。</p>
+        </div>
+      </div>
+      <div class="ck">
+        <h3><span>人事担当者</span>1on1と開示</h3>
+        <div class="box">
+          <h4>1on1で、上司がしないこと</h4>
+          <ul class="dots-list">
+            <li>答えを言わない。言いたくなったら「それを試すとしたら、いちばん小さな形は何ですか」と聞き返す</li>
+            <li>ワークブックの中身を人事評価に使わない</li>
+            <li>本人が見せていない欄を聞き出さない</li>
+            <li>試しの結果を「成功・失敗」で受け取らない</li>
+            <li>転職や社外の話が出ても、引き止めや評価をしない</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>人的資本の開示との関係</h4>
+          <p>2023年3月期の有価証券報告書から、2つの方針の記載が必須になりました。「人材育成方針」と「社内環境整備方針」です。方針に関する指標の内容・目標・実績も、記載が必須です<sup class="ref"><a href="#src2">[2]</a></sup>。内閣官房の人的資本可視化指針（2022年8月）も、開示事項の例を挙げています。「育成」「スキル/経験」「エンゲージメント」などです<sup class="ref"><a href="#src3">[3]</a></sup>。</p>
+          <p>この研修と1on1は、人材育成方針の一部として説明できる可能性があります。たとえば「キャリア自律を支える取組」としてです。これは提案です。開示に使えるかは、各社でご判断ください。</p>
+          <div class="metrics">
+            <table>
+              <thead><tr><th>自社で定義できる指標の候補</th><th>測り方</th></tr></thead>
+              <tbody>
+                <tr><td>キャリア対話の実施率</td><td>研修後3か月で、1on1を3回実施した人の割合</td></tr>
+                <tr><td>小さな試しの実施率</td><td>職場での小さな試しを1回以上行った人の割合（本人の申告）</td></tr>
+                <tr><td>計画書の書き足し率</td><td>3か月後に第2版を書き足した人の割合（中身は見ない）</td></tr>
+                <tr><td>部署を越えた紹介の数</td><td>1on1の最後の問いで、上司が実際につないだ件数</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small">効果を言うには、比べる設計が別に要ります。受講した人としていない人、研修の前と後を比べる設計です。どれも、研修の効果を示す指標ではありません。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 届くもの -->
+<section class="white pb-l" id="package" aria-labelledby="h-pkg">
+  <div class="wrap">
+    <p class="sec-label">届くもの</p>
+    <h2 class="sec" id="h-pkg">授業と研修に必要なものは、ひとそろい用意してあります</h2>
+    <figure class="wide-ph"><img src="img/materials-flatlay.webp" alt="" width="1920" height="1080" loading="lazy"></figure>
+    <div class="pkg">
+      <div class="pk"><p class="n num">3<small>版</small></p><h3>ワークブック</h3><p>高校生版・大学生版・社会人版。A4で73・76・78ページ。記入例はそれぞれ架空の3人です。</p></div>
+      <div class="pk"><p class="n num">2<small>種</small></p><h3>授業案</h3><p>高校（50分×17コマ・59ページ）と大学（90分×15回・53ページ）。分単位の時間割と先生のことばつき。</p></div>
+      <div class="pk"><p class="n num">17<small>ページ</small></p><h3>企業研修の台本</h3><p>1日目・2日目・振り返り会の時間割と、進行役のことば。1on1の問いと、上司がしないこと。</p></div>
+      <div class="pk"><p class="n num">3<small>観点</small></p><h3>ルーブリック</h3><p>先生用と生徒用。評価に入れないもの、計画書の記述量の数え方まで。</p></div>
+      <div class="pk"><p class="n num">11<small>枚</small></p><h3>授業の出来事カード</h3><p>第2〜12回の始まりに使うカード。印刷用PDF、1ページに同じカード10枚。</p></div>
+      <div class="pk"><p class="n num">1<small>式</small></p><h3>カードゲームと体験会セット</h3><p>「元手と冒険」の印刷用PDF（3版）、体験会の進行台本・カード・持ち帰る1枚。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 声（これから集める） -->
+<section class="pt-l pb-xl" id="voices" aria-labelledby="h-voice">
+  <div class="wrap">
+    <h2 class="sec" id="h-voice">試していただいた方の声</h2>
+    <p class="voice-note">※ 2026年度の実証をもとに、掲載予定です</p>
+    <!-- 声を載せるときは、下の <div class="voices"> の中に1件ずつ入れる。加工せず原文のまま、立場と時期を添える。
+      <figure class="voice">
+        <blockquote><p>（いただいた声の原文）</p></blockquote>
+        <figcaption>（立場・時期の例：高校 教諭／2027年3月）</figcaption>
+      </figure>
+    -->
+    <div class="voices"></div>
+  </div>
+</section>
+
+<figure class="bleed"><img src="img/window.webp" alt="" width="1200" height="1600" loading="lazy" style="object-position: 50% 42%"></figure>
+
+<!-- 料金 -->
+<section class="pt-xl" id="price" aria-labelledby="h-price">
+  <div class="wrap">
+    <p class="sec-label">料金</p>
+    <h2 class="sec" id="h-price">料金<span class="kari">仮</span></h2>
+    <p class="sec-lead">いまはテスト版です。金額と含まれるものは、すべて仮です。人数や回数に合わせてお見積もりします。</p>
+    <div class="prices">
+      <article class="pr">
+        <p class="tag">まず試す</p><h3>体験会</h3>
+        <p class="yen num">50,000円〜<small>1回（50分または90分）・40人まで<span class="kari-s">（仮）</span></small></p>
+        <ul><li>進行役1名が伺います</li><li>カード一式・持ち帰る1枚を人数分印刷</li><li>説明会・オープンキャンパス・社内イベントに</li></ul>
+        <a class="more" href="#contact"><span>体験会を相談する</span><span class="ar" aria-hidden="true">→</span></a>
+      </article>
+      <article class="pr main">
+        <p class="tag"><em>中心のプラン</em>高校</p><h3>学校での導入（1年次）</h3>
+        <p class="yen num">180,000円<small>1校・1年あたり ＋ ワークブック 1冊 1,200円<span class="kari-s">（仮）</span></small></p>
+        <ul><li>授業案・ルーブリック・出来事カード・カードゲーム</li><li>先生向けの説明会（90分）</li><li>第1回の授業に同席</li><li>決算の回のあとに、楽しみ度の集計を一緒に見る</li></ul>
+        <a class="more" href="#contact"><span>導入を相談する</span><span class="ar" aria-hidden="true">→</span></a>
+      </article>
+      <article class="pr">
+        <p class="tag">大学</p><h3>大学の授業（半期）</h3>
+        <p class="yen num">150,000円<small>1科目・1年あたり ＋ ワークブック 1冊 1,500円<span class="kari-s">（仮）</span></small></p>
+        <ul><li>15回の授業案、シラバス案、成績評価の案</li><li>担当教員向けの説明会（90分）</li><li>複数クラスでの利用も相談できます</li></ul>
+        <a class="more" href="#contact"><span>授業での利用を相談する</span><span class="ar" aria-hidden="true">→</span></a>
+      </article>
+      <article class="pr">
+        <p class="tag">企業</p><h3>企業研修</h3>
+        <p class="yen num">900,000円〜<small>1回・30人まで<span class="kari-s">（仮）</span></small></p>
+        <ul><li>1日目・2日目（半日×2）と振り返り会の進行</li><li>上司向けの1on1の説明会</li><li>ワークブック社会人版を人数分</li><li>1年後の第3版の会は別にお見積もり</li></ul>
+        <a class="more" href="#contact"><span>研修を相談する</span><span class="ar" aria-hidden="true">→</span></a>
+      </article>
+    </div>
+    <div class="trial" id="trial">
+      <div><h3>試行に協力してくださる学校・企業を探しています<span class="kari-s">（仮）</span></h3><p>教材と授業案は、できあがっています。授業での試行は、これからです。毎回の楽しみ度の集計などを共有していただく形で、条件をご相談します。</p></div>
+      <a class="more" href="#contact"><span>試行について聞く</span><span class="ar" aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- よくある質問 -->
+<section class="white" id="faq" aria-labelledby="h-faq">
+  <div class="wrap">
+    <p class="sec-label">よくある質問</p>
+    <h2 class="sec" id="h-faq">よくある質問</h2>
+    <div class="faq">
+      <details id="faq-prep"><summary>先生の準備は、どれくらいですか？</summary><p>授業案に、分単位の時間割と先生のことばが書いてあります。毎回の準備は、その回の出来事カードと付箋くらいです。決算の回はタイマー、第12回は封をするのりを使います。第7回だけ、話を聞ける大人の候補を先に用意します。数字を使う回は、授業の前に最新の値を確かめます。</p></details>
+      <details><summary>授業で試した結果はありますか？</summary><p>教材・授業案・ルーブリックは、できあがっています。学校と企業での試行は、これから始めます。そのため、試した結果はまだありません。毎回の楽しみ度（5〜1）を集めます。数字が下がった回から、直していく前提です。</p></details>
+      <details><summary>生徒が何も書けなかったら？</summary><p>各ACTの扉に「書けない欄があって構わない」と書いてあります。書けない欄は「これから埋めるもの」として残し、2年目・3年目に書き足します。記入例はわざと途中の答えにしてあり、まねをする見本ではありません。</p></details>
+      <details><summary>実在の会社の名前を出して大丈夫ですか？</summary><p>公開資料にもとづいて、仕組みを説明しています。数字には時点と出典をつけ、授業の前に最新の値に差し替えます。ロゴや商品写真は使いません。取り上げる会社との提携や協賛の関係は、ありません。</p></details>
+      <details><summary>1年で終わっても使えますか？</summary><p>使えます。12回で計画書の第1版ができあがります。2年目以降は、書き足しです。続けるかどうかは、学校や会社で決められます。手紙を開ける回だけでも、1年後に1コマ取ることをおすすめしています。</p></details>
+      <details><summary>社会人版は、若手向けだけですか？</summary><p>入社3年目〜中堅社員を想定しています。管理職向けにも使えます。記入例は、育休から復帰した受注担当・社内SE・経理課長の架空の3人です。お金や家族に関わる欄は、書かなくてよい欄にしています。</p></details>
+      <details><summary>何人から実施できますか？</summary><p>4〜5人のチームを2つ以上つくれる人数（8人ほど）から実施できます。企業研修は1回12〜30人を想定しています。</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- 相談（最下部のCTA） -->
+<section class="contact pt-l pb-l" id="contact" aria-labelledby="h-contact">
+  <div class="wrap">
+    <div>
+      <p class="sec-label">ご相談</p>
+      <h2 id="h-contact">まずは、50分の体験会から</h2>
+      <p class="lead2">カードゲームで会社を動かし、最後の10分で自分に戻ります。参加した人は、「持ち帰る1枚」を持って帰ります。設立証書と、ステータスの初期値を書いた1枚です。</p>
+      <div class="flow">
+        <div><b>01</b><span>このフォームでご相談（立場と人数の目安だけでも構いません）</span></div>
+        <div><b>02</b><span>オンラインで30分、目的と時期を伺います</span></div>
+        <div><b>03</b><span>体験会、または教材の見本をお届けします</span></div>
+      </div>
+    </div>
+    <form class="cf" id="cf" novalidate>
+      <div class="row2">
+        <label for="f-name">お名前<input type="text" id="f-name" name="name" autocomplete="name"></label>
+        <label for="f-org">所属（学校名・会社名）<input type="text" id="f-org" name="org" autocomplete="organization"></label>
+      </div>
+      <div class="row2">
+        <label for="f-role">お立場
+          <select id="f-role" name="role">
+            <option value="">選んでください</option>
+            <option>高校の先生</option><option>大学の教員・職員</option><option>企業の人事・研修担当</option><option>参加を考えている</option><option>その他</option>
+          </select>
+        </label>
+        <label for="f-size">人数の目安<input type="text" id="f-size" name="size" placeholder="例：1学年160人、研修1回20人"></label>
+      </div>
+      <fieldset>
+        <legend>関心のあること（いくつでも）</legend>
+        <div class="checks2">
+          <label for="c1"><input type="checkbox" id="c1" name="i" value="体験会">体験会</label>
+          <label for="c2"><input type="checkbox" id="c2" name="i" value="学校">学校での導入</label>
+          <label for="c3"><input type="checkbox" id="c3" name="i" value="大学">大学の授業</label>
+          <label for="c4"><input type="checkbox" id="c4" name="i" value="研修">企業研修</label>
+          <label for="c5"><input type="checkbox" id="c5" name="i" value="試行">試行への協力</label>
+          <label for="c6"><input type="checkbox" id="c6" name="i" value="見本">教材の見本</label>
+        </div>
+      </fieldset>
+      <label for="f-msg">ご相談の内容<textarea id="f-msg" name="msg" placeholder="時期、使いたい時間（総合的な探究の時間、新任研修など）、気になっていること"></textarea></label>
+      <label for="f-mail">メールアドレス<input type="email" id="f-mail" name="mail" autocomplete="email"></label>
+      <button class="btn-pop" type="submit">内容を確かめる</button>
+      <p class="done" id="cfDone" hidden></p>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer class="site" lang="ja">
+  <div class="wrap">
+    <p class="brandline">FOQUS｜キャリアを経営する</p>
+    <div class="notes">
+      <p>このページはテスト版です。料金・条件は、すべて仮です。</p>
+      <p>お問い合わせフォームは、送信されません。授業での試行は、これからです。</p>
+      <p>記入例のミナト・ハル・ソラ、ステータス画面の数値は架空です。写真はイメージです。</p>
+      <p>取り上げる会社と FOQUS に、提携・協賛の関係はありません。</p>
+    </div>
+    <div>
+      <h2>出典</h2>
+      <ol>
+        <li id="src1">メルカリ 有価証券報告書（2026年6月期）　<a href="https://pdf.irpocket.com/C4385/xoA3/MuFf/f6wj/WjKJ.pdf" target="_blank" rel="noopener">https://pdf.irpocket.com/C4385/xoA3/MuFf/f6wj/WjKJ.pdf</a></li>
+        <li id="src2">金融庁「企業内容等の開示に関する内閣府令」等の改正（2023年1月31日）　<a href="https://www.fsa.go.jp/news/r4/sonota/20230131/20230131.html" target="_blank" rel="noopener">https://www.fsa.go.jp/news/r4/sonota/20230131/20230131.html</a></li>
+        <li id="src3">内閣官房「人的資本可視化指針」（2022年8月）　<a href="https://www.cas.go.jp/jp/houdou/pdf/20220830shiryou1.pdf" target="_blank" rel="noopener">https://www.cas.go.jp/jp/houdou/pdf/20220830shiryou1.pdf</a></li>
+      </ol>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  try { document.documentElement.lang = "ja"; } catch (e) {}
+  var NS = "http://www.w3.org/2000/svg";
+  function el(name, attrs, parent) { var e = document.createElementNS(NS, name); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+
+  /* ステータス画面：記入例（架空の生徒ミナト）の1年目 */
+  var D = {
+    hito: [2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 6, 6],
+    mono: [1, 1, 2, 3, 3, 3, 3, 4, 4, 5, 5, 5],
+    kane: [8, 8, 8, 8, 8, 8, 8, 9, 9, 10, 10, 10]
+  };
+  var WORD_AT = [1, 2, 4, 5, 6, 8, 9, 10, 12];
+  var LABEL = { 5: "第5回（決算 第1期）まで", 9: "第9回（決算 第2期）まで", 12: "第12回（決算 第3期）まで" };
+
+  var gauges = Array.prototype.slice.call(document.querySelectorAll("svg.gauge[data-g]"));
+  gauges.forEach(function (g) { for (var i = 0; i < 10; i++) el("circle", { cx: 10 + i * 21 + (i >= 5 ? 7 : 0), cy: 10, r: 8.25 }, g); });
+  var bPlan = document.getElementById("b-plan"), bWord = document.getElementById("b-word");
+  [bPlan, bWord].forEach(function (svg) {
+    for (var i = 0; i < 12; i++) {
+      var x = 1 + i * 21;
+      var grp = el("g", {}, svg);
+      el("rect", { x: x, y: 1, width: 17, height: 17 }, grp);
+      if (svg === bPlan) el("line", { x1: x, y1: 18, x2: x + 17, y2: 1, "class": "hatch" }, grp);
+    }
+  });
+  var track = document.getElementById("track");
+  var seq = ["START"]; for (var n = 1; n <= 12; n++) { seq.push(String(n)); if (n === 5 || n === 9 || n === 12) seq.push("決算"); }
+  var trackItems = seq.map(function (s) {
+    var w = s === "START" ? 42 : s === "決算" ? 34 : 22;
+    var svg = el("svg", { width: w, height: 22, viewBox: "0 0 " + w + " 22", "aria-hidden": "true" }, track);
+    if (s === "START" || s === "決算") { el("rect", { x: 1, y: 1, width: w - 2, height: 20 }, svg); if (s === "決算") svg.setAttribute("class", "kessan"); }
+    else el("circle", { cx: 11, cy: 11, r: 10 }, svg);
+    var t = el("text", { x: w / 2, y: 14.5, "text-anchor": "middle" }, svg); t.textContent = s;
+    return svg;
+  });
+
+  var range = document.getElementById("lessonRange"), label = document.getElementById("rangeLabel"), msg = document.getElementById("unlockMsg");
+  function setOn(node, on) { var c = node.getAttribute("class") || ""; c = c.replace(/\bon\b/g, "").trim(); node.setAttribute("class", on ? (c + " on").trim() : c); }
+  function render(n) {
+    gauges.forEach(function (g) { var v = D[g.dataset.g][n - 1]; Array.prototype.forEach.call(g.children, function (c, i) { setOn(c, i < v); }); document.getElementById("v-" + g.dataset.g).textContent = v; });
+    Array.prototype.forEach.call(bPlan.children, function (grp, i) {
+      var b = i + 1, locked = (b >= 6 && b <= 9 && n < 6) || (b >= 10 && n < 10);
+      var r = grp.firstChild, ln = grp.lastChild;
+      r.setAttribute("class", (b <= n ? "on" : "") + (locked ? " lock" : ""));
+      ln.style.display = locked ? "" : "none";
+    });
+    document.getElementById("v-plan").textContent = n;
+    var w = WORD_AT.filter(function (x) { return x <= n; }).length;
+    Array.prototype.forEach.call(bWord.children, function (grp, i) { setOn(grp.firstChild, i < w); });
+    document.getElementById("v-word").textContent = w;
+    var kCount = n >= 12 ? 3 : n >= 9 ? 2 : n >= 5 ? 1 : 0;
+    var pos = n + kCount;
+    trackItems.forEach(function (svg, i) { setOn(svg, i <= pos); });
+    label.textContent = LABEL[n] || ("第" + n + "回まで");
+    msg.textContent = n >= 10 ? "ACT 3 解放：ブロック10〜12が書けるようになりました" : n >= 6 ? "ACT 2 解放：ブロック06〜09が書けるようになりました" : "ブロック06〜12は、ACT 2・ACT 3 で解放されます";
+  }
+  range.addEventListener("input", function () { render(+range.value); });
+  render(+range.value);
+
+  /* 授業の段階タブ */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab[role="tab"]'));
+  function select(t) {
+    tabs.forEach(function (x) { var on = x === t; x.setAttribute("aria-selected", on); x.tabIndex = on ? 0 : -1; document.getElementById(x.getAttribute("aria-controls")).hidden = !on; });
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener("click", function () { select(t); });
+    t.addEventListener("keydown", function (e) {
+      var j = null; if (e.key === "ArrowRight") j = (i + 1) % tabs.length; if (e.key === "ArrowLeft") j = (i - 1 + tabs.length) % tabs.length;
+      if (j !== null) { e.preventDefault(); select(tabs[j]); tabs[j].focus(); }
+    });
+  });
+
+  /* なぞとき */
+  var ans = document.getElementById("answer");
+  document.querySelectorAll("#choices .choice").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var picked = b.dataset.k;
+      document.querySelectorAll("#choices .choice").forEach(function (x) { x.classList.toggle("right", x.dataset.k === "B"); x.classList.toggle("wrong", x.dataset.k !== "B"); });
+      ans.classList.remove("wait");
+      ans.innerHTML = '<p class="lab">こたえ　B（売れたときの手数料）' + (picked === "B" ? "　予想どおりでした" : "　予想は " + picked + " でした") + '</p>' +
+        '<p>売りたい人と買いたい人の間に立ちます。売買が成立したときに、販売価格の一部を手数料として受け取ります。メルカリは、二つの集まりを「つなぐ場」をつくっている会社です。</p>' +
+        '<p class="fact">確かめた事実：取引手数料は商品代金の10%。この手数料がメルカリの売上になる（2026年6月期 有価証券報告書）<sup class="ref"><a href="#src1">[1]</a></sup></p>' +
+        '<p class="hint">STEP2 では、同じ「つなぐ」をチームの会社でやってみます。</p>';
+    });
+  });
+
+  /* 楽しみ度 */
+  var eb = document.querySelectorAll("#enjoy button");
+  eb.forEach(function (b) { b.addEventListener("click", function () { eb.forEach(function (x) { x.setAttribute("aria-pressed", x === b); }); }); });
+
+  /* PICKUP「答えを見る」：よくある質問を開いて見せる */
+  document.querySelectorAll('a[href="#faq-prep"]').forEach(function (a) { a.addEventListener("click", function () { var d = document.getElementById("faq-prep"); if (d) d.open = true; }); });
+
+  /* 教材の拡大 */
+  var items = Array.prototype.slice.call(document.querySelectorAll("#gallery .g-item"));
+  var lb = document.getElementById("lb"), lbImg = document.getElementById("lbImg"), lbCap = document.getElementById("lbCap"), cur = 0;
+  function show(i) {
+    cur = (i + items.length) % items.length; var it = items[cur];
+    lbImg.src = it.dataset.src; lbImg.alt = it.querySelector("img").alt;
+    lbCap.innerHTML = "<b>" + it.querySelector("b").textContent + "</b>" + it.querySelector("span:last-child").textContent;
+    var box = lb.querySelector(".lb-img"); if (box) box.scrollTop = 0;
+  }
+  function openLb(i) { show(i); try { lb.showModal(); } catch (e) { lb.setAttribute("open", ""); } }
+  function closeLb() { try { lb.close(); } catch (e) { lb.removeAttribute("open"); } }
+  items.forEach(function (it, i) { it.addEventListener("click", function () { openLb(i); }); });
+  document.getElementById("lbPrev").addEventListener("click", function () { show(cur - 1); });
+  document.getElementById("lbNext").addEventListener("click", function () { show(cur + 1); });
+  document.getElementById("lbClose").addEventListener("click", closeLb);
+  lb.addEventListener("click", function (e) { if (e.target === lb) closeLb(); });
+  lb.addEventListener("keydown", function (e) { if (e.key === "ArrowRight") show(cur + 1); if (e.key === "ArrowLeft") show(cur - 1); });
+
+  /* 相談フォーム（テスト版：送信しない） */
+  var cf = document.getElementById("cf"), done = document.getElementById("cfDone");
+  cf.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var role = document.getElementById("f-role").value || "（未選択）";
+    var picks = Array.prototype.map.call(cf.querySelectorAll('input[name="i"]:checked'), function (x) { return x.value; });
+    done.hidden = false;
+    done.textContent = "テスト版のため、送信はされていません。入力された内容：お立場 " + role + "／関心 " + (picks.length ? picks.join("・") : "（未選択）") + "。公開版では、ここから FOQUS に届きます。";
+  });
+})();
+</script>
+
+</body>
+</html>
