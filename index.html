@@ -188,17 +188,6 @@ h2.sec { font-size: clamp(28px, 3.8vw, 40px); margin-top: 12px; }
 .aud-card footer { padding: 4px 24px 24px; }
 @media (max-width: 920px) { .aud { grid-template-columns: minmax(0, 1fr); } }
 
-/* 約束 */
-.promise .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 64px; align-items: start; }
-.promise h2 { font-size: clamp(26px, 3.4vw, 34px); margin-top: 12px; }
-.promise .side { margin-top: 20px; font-size: 15px; color: var(--muted); display: grid; gap: 12px; }
-.promise-photo { margin-top: var(--sp-s); }
-.promise-photo img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
-.vow { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(18px, 2.05vw, 23px); line-height: 2.15; }
-.vow p + p { margin-top: 1.2em; }
-.vow-src { margin-top: 20px; font-size: 13px; color: var(--muted); }
-@media (max-width: 920px) { .promise .wrap { grid-template-columns: minmax(0, 1fr); gap: 28px; } .promise-photo { max-width: 420px; } }
-
 /* 50分の時間割 */
 .bar { display: flex; height: 52px; margin-top: var(--sp-s); border: 1px solid var(--line); background: var(--sheet); }
 .bar div { display: grid; place-items: center; font-weight: 700; font-size: 13px; min-width: 0; border-right: 1px solid var(--line); }
@@ -678,28 +667,6 @@ footer.site .notes { display: grid; gap: 4px; opacity: .85; }
 </section>
 
 <figure class="bleed"><img src="img/ichite-bakery.webp" alt="" width="1920" height="1080" loading="lazy"></figure>
-
-<!-- 約束 -->
-<section class="promise pt-l pb-l" aria-labelledby="h-promise">
-  <div class="wrap">
-    <div>
-      <p class="sec-label">このワークブックの約束</p>
-      <h2 id="h-promise">最初のページに、こう書いてあります</h2>
-      <div class="side">
-        <p>キャリアは「探すもの」ではなく「経営するもの」と考えます。会社は元手を数え、小さく試し、毎年計画を書き直します。自分の計画も、同じように書き足していきます。</p>
-        <p>記入例は、わざと「途中の答え」にしてあります。正解は示さず、診断やタイプ分けもしません。</p>
-      </div>
-      <figure class="promise-photo"><img src="img/hero-sub.webp" alt="" width="1200" height="1600" loading="lazy"></figure>
-    </div>
-    <div>
-      <blockquote class="vow">
-        <p>やりたいことが、見つかっていなくて構いません。<br>むしろ、探すのをやめましょう。<br>代わりに、いま持っているものを並べることから始めます。</p>
-        <p>3年後、まったく違うことを書いていても構いません。<br>むしろ、それが普通です。<br>大事なのは、何が変わったかを知ることです。<br>変わり方には、その人らしさが出ます。</p>
-      </blockquote>
-      <p class="vow-src">ワークブック「はじめに」より（原文のまま）</p>
-    </div>
-  </div>
-</section>
 
 <!-- 1回の授業 -->
 <section class="white pt-l" id="lesson" aria-labelledby="h-lesson">
