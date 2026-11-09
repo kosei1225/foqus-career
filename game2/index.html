@@ -1,0 +1,1471 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>わたし株式会社 週末の焼き菓子</title>
+<meta name="description" content="週末に焼き菓子を作って売る1年を、1か月ずつ経営するゲームの試作品。">
+<meta name="robots" content="noindex, nofollow">
+<style>
+/* Layout: 帳簿のようなダッシュボード。上にお金と時間、真ん中に「先月の帳簿 → 今月の場面 → 今月の作戦」、下に年表。
+   ベージュの紙・深緑・蛍光グリーン（差し色は「やってみる」ボタンと現実の記録だけ）。角は4pxまで、影・グラデーションなし */
+:root {
+  color-scheme: light;
+  --paper: #EFEDE4; --sheet: #FFFFFF; --ink: #1C2B22; --muted: #6E7A72; --line: #D8D4C8;
+  --deep: #16301F; --pop: #00D959; --warn: #C77B3A; --floor: #E4E1D6; --sky: #F4F5EF; --on-ink: #FFFFFF;
+  --f-head: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", "BIZ UDPMincho", serif;
+  --f-body: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "YuGothic", "Noto Sans JP", "Meiryo", sans-serif;
+  --hud-h: 64px; --dock-h: 96px; --r: 4px;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+button, input, select, textarea { font: inherit; color: inherit; }
+h1, h2, h3 { margin: 0; font-weight: 600; line-height: 1.45; text-wrap: balance; }
+h1, h2 { font-family: var(--f-head); }
+p { margin: 0; }
+.num { font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 2px solid var(--deep); outline-offset: 2px; }
+
+/* 上：お金・体力・常連 */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--sheet); }
+.hud { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 20; background: var(--sheet); border-bottom: 1px solid var(--line); }
+.hud-in { max-width: 600px; margin: 0 auto; padding-block: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 4px; }
+.hud-top { display: flex; align-items: baseline; gap: 10px; }
+.hud-top .co { font-family: var(--f-head); font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.hud-top .mo { margin-left: auto; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.kpis { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.3fr) minmax(0, .8fr) minmax(0, .8fr); gap: 6px; }
+.kpi { display: grid; gap: 0; min-width: 0; }
+.kpi .k { font-size: 11px; color: var(--muted); font-weight: 700; }
+.kpi .v { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kpi .v small { font-size: 11px; font-weight: 400; color: var(--muted); margin-left: 2px; }
+.kpi.warn .v { color: var(--warn); }
+.kpi .bar { height: 4px; background: var(--line); margin-top: 3px; }
+.kpi .bar i { display: block; height: 100%; background: var(--ink); }
+.kpi.warn .bar i { background: var(--warn); }
+
+main { max-width: 600px; margin: 0 auto; padding-top: calc(var(--hud-h) + env(safe-area-inset-top, 0px) + 12px); padding-bottom: calc(var(--dock-h) + env(safe-area-inset-bottom, 0px) + 18px); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 14px; }
+.banner { font-size: 13px; color: var(--muted); display: grid; gap: 2px; }
+.banner b { color: var(--ink); }
+.panel { background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: grid; gap: 10px; min-width: 0; }
+.panel h2 { font-size: 18px; }
+.panel h3 { font-size: 15px; }
+.kicker { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .04em; }
+.lead { font-size: 14px; color: var(--muted); }
+.hint { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.txt { font-size: 14px; }
+
+/* 店の様子 */
+.shop svg { display: block; width: 100%; height: auto; }
+.shop { padding: 0; overflow: hidden; gap: 0; }
+.shop-cap { display: flex; flex-wrap: wrap; gap: 4px 12px; padding: 6px 12px 8px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+.shop-cap b { color: var(--ink); }
+
+/* 帳簿 */
+.ledger-top { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.big { display: grid; min-width: 0; }
+.big .k { font-size: 11px; color: var(--muted); font-weight: 700; }
+.big .v { font-family: var(--f-head); font-size: 20px; font-weight: 600; line-height: 1.3; white-space: nowrap; }
+.big .v.neg { color: var(--warn); }
+.big .s { font-size: 11px; color: var(--muted); }
+.tbl-wrap { overflow-x: auto; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 300px; }
+.tbl th, .tbl td { text-align: right; padding: 5px 6px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.tbl th:first-child, .tbl td:first-child { text-align: left; }
+.tbl th { font-size: 11px; color: var(--muted); font-weight: 700; }
+.why { display: grid; gap: 4px; font-size: 13px; }
+.why p { padding-left: 14px; position: relative; }
+.why p::before { content: ""; position: absolute; left: 2px; top: .7em; width: 5px; height: 5px; background: var(--muted); }
+.why p.sub::before { display: none; }
+.voices { display: grid; gap: 6px; }
+.voice { border: 1px solid var(--line); border-radius: var(--r); padding: 8px 10px; display: grid; gap: 2px; font-size: 13px; }
+.voice .tag { font-size: 11px; font-weight: 700; }
+.voice.fact { border-left: 3px solid var(--deep); }
+.voice.fact .tag { color: var(--deep); }
+.voice.opinion { border-left: 3px solid var(--line); background: var(--paper); }
+.voice.opinion .tag { color: var(--muted); }
+.wordget { border: 1px solid var(--ink); border-radius: var(--r); padding: 10px 12px; display: grid; gap: 2px; }
+.wordget .k { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .06em; }
+.wordget b { font-family: var(--f-head); font-size: 17px; }
+.wordget p { font-size: 13px; }
+
+/* 場面 */
+.scene { border-left: 4px solid var(--deep); }
+.scene .who { font-size: 12px; color: var(--muted); }
+.choices { display: grid; gap: 8px; }
+.picked { font-size: 14px; border-top: 1px dashed var(--line); padding-top: 8px; }
+
+/* 作戦 */
+.plan { gap: 14px; }
+.row-set { display: grid; grid-template-columns: 5.5em minmax(0, 1fr); gap: 10px; align-items: center; }
+.row-set > .lab { font-size: 13px; font-weight: 700; }
+.stepper { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.stepper button { width: 40px; height: 40px; border-radius: var(--r); border: 1px solid var(--ink); background: var(--sheet); font-size: 18px; font-weight: 700; cursor: pointer; }
+.stepper .val { min-width: 4.6em; text-align: center; font-weight: 700; font-size: 17px; }
+.stepper .note { font-size: 12px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--sheet); border-radius: 2px; padding: 6px 10px; font-size: 13px; cursor: pointer; min-height: 38px; line-height: 1.35; text-align: left; }
+.chip small { display: block; font-size: 11px; color: var(--muted); }
+.chip[aria-pressed="true"] { border-color: var(--deep); background: var(--deep); color: var(--on-ink); }
+.chip[aria-pressed="true"] small { color: #CFE0D6; }
+.chip:disabled { opacity: .45; cursor: default; }
+.sub { border: 1px dashed var(--line); border-radius: var(--r); padding: 10px; display: grid; gap: 8px; }
+.sub .lab { font-size: 12px; font-weight: 700; }
+.timebar { display: grid; gap: 4px; }
+.timebar .tb { position: relative; height: 12px; background: var(--paper); border: 1px solid var(--line); }
+.timebar .tb i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ink); }
+.timebar.over .tb i { background: var(--warn); }
+.timebar .tl2 { display: flex; justify-content: space-between; font-size: 12px; }
+.timebar.over .tl2 b { color: var(--warn); }
+.costline { font-size: 12px; color: var(--muted); }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 10px 18px; border-radius: var(--r); border: 1px solid var(--ink); background: var(--sheet); font-weight: 700; cursor: pointer; text-align: center; }
+.btn.pri { background: var(--pop); border-color: var(--pop); color: var(--ink); }
+.btn.dark { background: var(--ink); border-color: var(--ink); color: var(--on-ink); }
+.btn.ghost { border-color: var(--line); background: transparent; }
+.btn.wide { width: 100%; }
+.btn:disabled { opacity: .45; cursor: default; }
+.linkish { background: none; border: 0; padding: 4px 0; font-size: 13px; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; justify-self: start; }
+.go { display: grid; gap: 8px; }
+
+/* 仮説 */
+.hyp { display: grid; gap: 8px; }
+.hq { display: grid; gap: 2px; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--r); background: var(--sheet); }
+.hq .q { font-size: 12px; font-weight: 700; color: var(--muted); }
+.hq .a { font-size: 14px; font-weight: 700; }
+.hq .meter { height: 5px; background: var(--line); }
+.hq .meter i { display: block; height: 100%; background: var(--deep); }
+.hq.ok { border-color: var(--deep); }
+.hq .st { font-size: 11px; font-weight: 700; }
+.hq.ok .st { color: var(--deep); }
+
+/* 下：年表とメニュー */
+.dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--sheet); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.dock-in { max-width: 600px; margin: 0 auto; padding-left: max(12px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px)); }
+.tl { overflow-x: auto; padding-block: 8px 4px; }
+.tl-row { display: flex; gap: 3px; min-width: min-content; align-items: flex-end; }
+.tl .c { position: relative; width: 24px; height: 26px; border-radius: 1px; border: 1px solid var(--line); background: var(--paper); padding: 0; cursor: pointer; font-size: 9px; line-height: 1; color: var(--muted); display: grid; place-items: end center; padding-bottom: 2px; }
+.tl .c.plus { background: var(--deep); border-color: var(--deep); color: var(--on-ink); }
+.tl .c.minus { background: var(--warn); border-color: var(--warn); color: var(--on-ink); }
+.tl .c.zero { background: var(--line); }
+.tl .c.now { background: var(--sheet); border: 2px solid var(--deep); color: var(--ink); }
+.tl .c.fork::before { content: ""; position: absolute; left: -1px; right: -1px; top: -6px; height: 3px; background: var(--deep); }
+.tl .c.real::after { content: ""; position: absolute; right: 2px; top: 2px; width: 6px; height: 6px; border-radius: 50%; background: var(--pop); }
+.nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding-block: 2px 6px; }
+.nav button { min-height: 40px; border: 0; background: none; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: var(--r); padding: 4px 2px; line-height: 1.3; }
+.nav button:hover { background: var(--paper); }
+.nav .exit { color: var(--deep); }
+
+/* 重ねて出す画面 */
+.sheet { position: fixed; inset: 0; z-index: 40; background: rgba(28, 43, 34, .45); display: flex; align-items: flex-end; justify-content: center; }
+.sheet[hidden] { display: none !important; }
+.sheet-in { width: 100%; max-width: 600px; max-height: calc(100% - 24px - env(safe-area-inset-top, 0px)); overflow: auto; background: var(--paper); border-radius: var(--r) var(--r) 0 0; padding-block: 18px calc(20px + env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 14px; align-content: start; }
+@media (min-width: 660px) { .sheet { align-items: center; } .sheet-in { border-radius: var(--r); max-height: calc(100% - 48px); } }
+.sheet-in h2 { font-size: 20px; }
+.sheet-in section { display: grid; gap: 8px; }
+.opts { display: grid; gap: 6px; }
+.opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); cursor: pointer; font-size: 14px; line-height: 1.55; }
+.opt input { margin-top: 3px; accent-color: var(--deep); width: 18px; height: 18px; flex: none; }
+.opt.on { border-color: var(--deep); }
+.opt small { display: block; color: var(--muted); font-size: 12px; }
+.field { display: grid; gap: 4px; font-size: 13px; font-weight: 700; }
+.field input, .field textarea { font-weight: 400; font-size: 15px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r); background: var(--sheet); width: 100%; }
+.field textarea { min-height: 84px; resize: vertical; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; }
+.row .btn { flex: 1 1 140px; }
+.warnbox { border: 1px solid var(--warn); background: var(--sheet); border-radius: var(--r); padding: 10px 12px; font-size: 13px; }
+.note-prev { background: var(--sheet); border-left: 3px solid var(--deep); padding: 10px 12px; font-size: 14px; }
+.bigline { font-family: var(--f-head); font-size: 18px; }
+.bars { display: flex; align-items: flex-end; gap: 3px; height: 90px; border-bottom: 1px solid var(--line); position: relative; }
+.bars i { flex: 1; display: block; background: var(--deep); min-height: 1px; }
+.bars i.neg { background: var(--warn); }
+.bars-l { display: flex; gap: 3px; font-size: 10px; color: var(--muted); }
+.bars-l span { flex: 1; text-align: center; }
+.dex { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.dx { background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); padding: 8px 10px; min-height: 76px; display: grid; align-content: start; gap: 2px; min-width: 0; }
+.dx b { font-family: var(--f-head); font-size: 15px; }
+.dx p { font-size: 12px; line-height: 1.5; }
+.dx.off b { color: var(--line); font-size: 18px; letter-spacing: .1em; }
+.routes { display: grid; gap: 8px; }
+.route { background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; display: grid; gap: 6px; }
+.route.cur { border-color: var(--deep); }
+.route .rh { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 700; flex-wrap: wrap; }
+.route .c { width: 16px; height: 16px; cursor: default; }
+.route .c.shared { opacity: .3; }
+.rest { min-height: 50vh; display: grid; place-items: center; text-align: center; gap: 14px; padding-block: 40px; }
+.rest p { color: var(--muted); }
+textarea.code { font-family: ui-monospace, Menlo, monospace; font-size: 11px; min-height: 120px; }
+
+/* 店の図（線と形だけ） */
+.o-wall { fill: var(--sheet); } .o-floor { fill: var(--floor); } .o-ln { stroke: var(--line); stroke-width: 1; }
+.o-frame { stroke: var(--ink); stroke-width: 1.5; } .o-none { fill: none; } .o-white { fill: var(--sheet); }
+.o-ink { fill: var(--ink); } .o-muted { fill: var(--muted); } .o-deep { fill: var(--deep); } .o-paper { fill: var(--paper); } .o-pop { fill: var(--pop); }
+.o-t { fill: var(--muted); font-size: 8px; font-family: var(--f-body); }
+.o-tw { fill: var(--on-ink); font-size: 8px; font-family: var(--f-body); }
+.o-leg { stroke: var(--ink); stroke-width: 1.5; }
+.o-dark { fill: var(--ink); }
+@media (min-width: 720px) { .dex { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 380px) { table.tbl { min-width: 0; font-size: 12px; } .tbl th, .tbl td { padding: 4px 3px; } .tbl th { font-size: 10px; } .kpi .v { font-size: 13px; } .kpi .v small { font-size: 10px; } .ledger-top { grid-template-columns: repeat(2, minmax(0, 1fr)); } .row-set { grid-template-columns: minmax(0, 1fr); gap: 4px; } }
+
+</style>
+</head>
+<body>
+<header class="hud"><div class="hud-in"><div class="hud-top"><span class="co" id="co">わたしの焼き菓子</span><span class="mo num" id="mo"></span></div><div class="kpis" id="kpis"></div></div></header>
+<main>
+  <div class="banner" id="banner"></div>
+  <section class="panel shop" id="shop" aria-label="台所と売り場"></section>
+  <section id="flow" class="go" aria-live="polite"></section>
+</main>
+<footer class="dock"><div class="dock-in">
+  <div class="tl" id="tl" aria-label="年表"></div>
+  <nav class="nav" aria-label="メニュー">
+    <button type="button" data-act="hyp">仮説<br>ボード</button>
+    <button type="button" data-act="words">ことば</button>
+    <button type="button" class="exit" data-act="exit">今日は<br>ここまで</button>
+    <button type="button" data-act="menu">メニュー</button>
+  </nav>
+</div></footer>
+<div class="sheet" id="sheet" hidden></div>
+<script>
+/* わたし株式会社 試作2「週末の焼き菓子」：中身（場面・人・声・ことば）
+   数字の意味は engine2.js の先頭を参照。表示する文はすべてここ。 */
+(function (root) {
+  var D = (root.WK2 = root.WK2 || {}).DATA = {};
+
+  // ---------------- 立場 ----------------
+  D.ROLES = {
+    worker: { label: "会社で働いている", hours: 26, cash: 50000, place: "職場", job: "仕事", friend: "同期のミカ",
+      note: "平日は仕事。土日に使えるのは、月に26時間くらい。焼き菓子に使えるお金（元手）は5万円。" },
+    student: { label: "学生", hours: 40, cash: 20000, place: "学校", job: "授業と課題", friend: "同じクラスのミカ",
+      note: "授業のあと・土日に使えるのは、月に40時間くらい。元手はバイト代から2万円。" }
+  };
+
+  // ---------------- お客さん（だれが本当に買うかは、遊ぶたびに変わる） ----------------
+  // key：その人たちに効く工夫。wtp：払ってもいい値段（1袋）の目安
+  D.SEGS = {
+    A: { label: { worker: "職場の人", student: "学校の友だち" }, key: "flavor", wtp: { worker: 380, student: 300 },
+      job: { worker: "仕事の合間の気分転換", student: "放課後の小腹" } },
+    B: { label: "子育て中の親", key: "label", wtp: 460, job: "子どものおやつを、安心できるものにしたい" },
+    C: { label: "手みやげを探す人", key: "wrap", wtp: 470, job: "人に渡して、喜ばれたい" }
+  };
+  D.FEATURES = {
+    label: { label: "原材料のラベル", desc: "何が入っていて、何が入っていないかを、袋に書く。1袋+10円。", cost: 10 },
+    wrap: { label: "個包装と箱", desc: "1枚ずつ包んで、箱に入れる。見た目が手みやげになる。1袋+50円。", cost: 50 },
+    flavor: { label: "新しい味", desc: "味を1つ増やす（いまは1種類）。選ぶ楽しさが増え、飽きにくい。", cost: 0 }
+  };
+
+  // ---------------- 売る場所 ----------------
+  // exposure：1か月に知ってもらえる人の数、mix：お客さんの内わけ、conv：知った人が買う割合のもと
+  D.CHANNELS = {
+    work: { label: { worker: "職場で売る", student: "学校で売る" }, short: { worker: "職場", student: "学校" }, exposure: 25, mix: { A: 0.7, B: 0.2, C: 0.1 }, conv: 0.35, goodwill: true },
+    friends: { label: "知り合いに売る", short: "知り合い", exposure: 0, mix: { A: 0.4, B: 0.3, C: 0.3 }, conv: 0.3, goodwill: true },
+    market: { label: "マルシェ", short: "マルシェ", exposure: 300, mix: { A: 0.25, B: 0.45, C: 0.3 }, conv: 0.12 },
+    bakery: { label: "佐藤さんのパン屋", short: "パン屋", exposure: 600, mix: { A: 0.2, B: 0.4, C: 0.4 }, conv: 0.07, retail: 450, wholesale: 300 },
+    online: { label: "ネット", short: "ネット", exposure: 150, mix: { A: 0.1, B: 0.2, C: 0.7 }, conv: 0.05, ship: 200, fee: 0.1 }
+  };
+
+  // ---------------- 今月やること ----------------
+  D.ACTIONS = {
+    interview: { label: "話を聞く（2人）", hours: 2, cash: 0, desc: "だれに、どう聞くかを選ぶ。" },
+    market: { label: "マルシェに出る", hours: 5, cash: 3000, desc: "出店料3,000円・朝7時から。知らない人に、直接知ってもらえる。" },
+    trial: { label: "試作する", hours: 3, cash: 2000, desc: "ラベル・個包装と箱・新しい味のどれかを、1つ加える。" },
+    sns: { label: "SNSに載せる", hours: 1, cash: 0, desc: "知り合いの外にも、少し届く。" },
+    online: { label: "ネットで売る準備", hours: 3, cash: 0, desc: "来月から、ネットでも売れる。送料200円はこちら持ち、手数料1割。" },
+    rest: { label: "休む", hours: 4, cash: 0, desc: "体力が戻る。" }
+  };
+
+  // ---------------- 聞き方 ----------------
+  D.ASK = {
+    opinion: { label: "「これ、いくらなら買いますか？」", note: "意見を聞く" },
+    fact: { label: "「最近、おやつ（手みやげ）を、どうしていますか？」", note: "あったことを聞く" }
+  };
+  // あったことの答え（だれに聞いたか × いちばん買う人たちかどうか）
+  D.QUOTES = {
+    A: {
+      main: { worker: ["昼の3時ごろに集中が切れて、先週はコンビニでお菓子を4回買った。でも同じ味ばかりで飽きてきた。", "週末に駅のお菓子屋で、350円くらいの焼き菓子を自分用に買った。仕事の合間に食べると、ひと息つける。"],
+        student: ["放課後、部活の前にコンビニで毎日なにか買ってる。昨日は150円のクッキー。いつも同じ味で飽きる。", "先週、購買のパンが売り切れてて、駅前で300円の焼き菓子を買った。"] },
+      other: { worker: ["お菓子？ 最近は控えていて、先週は1回も買ってないなあ。"], student: ["お菓子はあんまり買わない。お金はほかに使ってる。"] }
+    },
+    B: {
+      main: ["先週、子どものおやつを買うときに、原材料を見て2回棚に戻した。卵が入っていないものを探していて、結局450円のを買った。", "保育園のお迎えのあとに、おやつを買う。何が入っているか分からないものは、子どもには出さないようにしてる。"],
+      other: ["うちの子は決まったものしか食べないから、新しいおやつはあまり買わないの。"]
+    },
+    C: {
+      main: ["先月、手みやげを買うのに駅で20分迷った。箱に入っていて、600円くらいのにした。", "来週、取引先にあいさつに行く。手みやげは、見た目がちゃんとしているものを選ぶ。前回は550円の箱入りにした。"],
+      other: ["手みやげ？ 年に1、2回あるかないかかな。"]
+    }
+  };
+  D.OPINIONS = ["いいね！ 600円でも買うよ！", "おいしそう。応援してる！", "絶対売れると思う！", "わたしは買わないけど、友だちは好きそう。", "かわいい！ 800円くらいしそう。"];
+
+  // ---------------- 場面（毎月1つ） ----------------
+  // fx：その場で効くこと。mods：今月だけ効くこと。word：選んだらすぐ出会うことば
+  D.SCENES = [
+    { m: 0, id: "first", who: "", t: "最初の20袋",
+      d: "日曜の午後、試しにクッキーを20袋焼いた。1袋に6枚。材料費は1袋120円。この20袋を、どうする？",
+      ch: [
+        { l: "{place}で1袋300円で売ってみる", fx: { price: 300, make: 20 }, mods: { lock: true, onlyWork: true }, r: "まず売ってみることにした。" },
+        { l: "知り合いに配って、感想を聞く（お金はもらわない）", fx: { make: 20 }, mods: { lock: true, free: true }, r: "知り合いに配って、感想をもらうことにした。" },
+        { l: "まだ出さない。レシピを完璧にしてから", fx: { make: 0 }, mods: { lock: true, recipe: true }, r: "1か月、レシピを直すことにした。" }
+      ] },
+    { m: 1, id: "market", who: "田中さん（駅前マルシェの世話役）", t: "マルシェの誘い",
+      d: "近所で知り合った田中さんは、駅前マルシェの世話役。「来月の日曜、1区画あいてるけど出ない？ 出店料3,000円、朝7時集合、15時まで」",
+      ch: [
+        { l: "出る（3,000円・5時間）", fx: { invited: true }, mods: { market: true }, r: "マルシェに出ることにした。" },
+        { l: "今回は見送る", fx: { invited: true }, mods: {}, r: "今回は見送った。田中さんは「また声をかけるね」と言ってくれた。" },
+        { l: "当日、見学だけ行く（1時間）", fx: { invited: true }, mods: { visit: true, hours: -1 }, r: "見学に行って、お客さん1人に話を聞くことにした。" }
+      ] },
+    { m: 2, id: "voice", who: "買ってくれた人", t: "「おいしい！また買うね」",
+      d: "買ってくれた人が「おいしい！ また絶対買うね」と言ってくれた。",
+      ch: [
+        { l: "うれしい。それで十分", fx: {}, mods: {}, r: "その言葉を、ノートに書いておいた。" },
+        { l: "「ふだん、おやつはどうしていますか？」と聞く", fx: {}, mods: { freeAsk: "fact" }, word: "momtest", r: "ふだんのことを聞いてみた。" },
+        { l: "「いくらなら買いますか？」と聞く", fx: {}, mods: { freeAsk: "opinion" }, r: "値段を聞いてみた。" }
+      ] },
+    { m: 3, id: "butter", who: "", t: "バターが値上がり",
+      d: "バターが2割上がって、1袋の材料費が120円から150円になった。",
+      ch: [
+        { l: "値段を50円上げる", fx: { cost: 150, priceAdd: 50 }, mods: {}, r: "値段を50円上げた。" },
+        { l: "値段はそのまま", fx: { cost: 150 }, mods: {}, r: "値段は変えず、材料費の上がった分をかぶることにした。" },
+        { l: "1袋を6枚から5枚に減らす", fx: { cost: 125, smaller: true }, mods: {}, r: "1袋の枚数を減らした。値段はそのまま。" }
+      ] },
+    { m: 4, id: "bakery", who: "佐藤さん（パン屋の店主）", t: "パン屋の佐藤さん",
+      d: "パン屋の佐藤さんから。「うちの店に置かない？ 1袋300円で卸してくれたら、店で450円で売るよ」",
+      ch: [
+        { l: "置く", fx: { bakery: true }, mods: {}, r: "佐藤さんのパン屋に置くことにした。" },
+        { l: "置かない", fx: {}, mods: {}, r: "いまは自分で売る形を続けることにした。" },
+        { l: "今月だけ、試しに置く", fx: { bakeryOffer: true }, mods: { bakeryTrial: true }, r: "今月だけ、試しに置いてもらうことにした。" }
+      ] },
+    { m: 5, id: "busy", who: "", t: { worker: "残業の多い月", student: "テスト期間" },
+      d: "今月は{job}が立てこんで、使える時間がいつもより12時間少ない。",
+      ch: [
+        { l: "作る数を減らす", fx: {}, mods: { hours: -12 }, r: "今月は無理をしないことにした。" },
+        { l: "夜に作って、いつも通り出す", fx: { energy: -25 }, mods: {}, r: "夜中まで焼くことにした。" },
+        { l: "{friend}に手伝いを頼む（お礼3,000円）", fx: { cash: -3000 }, mods: { hours: -2 }, word: "askhelp", r: "手伝いを頼んだ。" }
+      ] },
+    { m: 6, id: "rival", who: "", t: "似たお店",
+      d: "マルシェとパン屋の近くに、似たクッキーを1袋300円で売る店が出てきた。",
+      ch: [
+        { l: "値段を50円下げる", fx: { priceAdd: -50 }, mods: {}, r: "値段を下げた。" },
+        { l: "ちがいを1つ出す（今月の試作がタダになる）", fx: { freeTrial: true }, mods: {}, word: "diff", r: "自分だけの点を1つ決めることにした。「試作する」で選べる。" },
+        { l: "気にしない", fx: { rival: 3 }, mods: {}, r: "いつも通りを続けることにした。" }
+      ] },
+    { m: 7, id: "big", who: "", t: "100袋の注文",
+      d: "{bigFrom}から「来月のイベント用に100袋。ただし1袋250円で」と注文がきた。",
+      ch: [
+        { l: "受ける（100袋）", fx: {}, mods: { big: 100 }, r: "100袋の注文を受けた。" },
+        { l: "50袋だけ受ける", fx: {}, mods: { big: 50 }, r: "50袋だけ受けた。" },
+        { l: "断る", fx: {}, mods: {}, r: "いまのお客さんを大事にすることにした。" }
+      ] },
+    { m: 8, id: "partner", who: "{friend}", t: "{friendName}の申し出",
+      d: "{friend}が「一緒にやりたい。手が増えれば、もっと作れるよね」と言ってきた。条件は、利益の3割を分けること。",
+      ch: [
+        { l: "一緒にやる（利益の3割を分ける）", fx: { helper: true }, mods: {}, word: "askhelp", r: "2人でやることにした。" },
+        { l: "ひとりで続ける", fx: {}, mods: {}, r: "いまはひとりで続けることにした。" },
+        { l: "忙しい月だけ頼む（1回3,000円）", fx: { helperSpot: true }, mods: {}, r: "忙しい月だけ頼めることになった。作戦の画面で選べる。" }
+      ] },
+    { m: 9, id: "oven", who: "", t: "2台目のオーブン",
+      d: "中古の業務用オーブンが8万円で出ている。1回に焼ける量が倍になる。",
+      ch: [
+        { l: "買う（8万円）", fx: { cash: -80000, oven: 2 }, mods: {}, r: "オーブンを買った。" },
+        { l: "買わない", fx: {}, mods: {}, r: "いまの台所で続けることにした。" },
+        { l: "共同キッチンを月5,000円で借りる", fx: { kitchen: true }, mods: {}, r: "共同キッチンを借りることにした。作戦の画面で、いつでもやめられる。" }
+      ] },
+    { m: 10, id: "season", who: "", t: "年末の手みやげ",
+      d: "12月。手みやげを探す人が増える季節になった。",
+      ch: [
+        { l: "箱入りを作る（今月だけ個包装と箱）", fx: {}, mods: { wrapMonth: true, season: 1.8 }, r: "箱入りを作ることにした。" },
+        { l: "いつも通り", fx: {}, mods: { season: 1.3 }, r: "いつも通り作ることにした。" },
+        { l: "予約を受けて、その分だけ作る", fx: {}, mods: { season: 1.2, preorder: true }, r: "予約を受けて、その分だけ作ることにした。" }
+      ] },
+    { m: 11, id: "next", who: "", t: "1年の終わり",
+      d: "3月。始めてから、もうすぐ1年。来年、どうする？（今月の結果のあとに、1年の決算があります）",
+      ch: [
+        { l: "このまま続ける", fx: { next: "keep" }, mods: {}, r: "来年も、このまま続けるつもりだ。" },
+        { l: "形を変える（相手や売る場所を変える）", fx: { next: "change" }, mods: {}, r: "来年は、形を変えてみるつもりだ。" },
+        { l: "やめる", fx: { next: "stop" }, mods: {}, word: "sunk", r: "1年で区切りをつけることにした。" }
+      ] }
+  ];
+  D.SICK = { id: "sick", who: "", t: "体調をくずした", d: "無理が続いて、体調をくずした。今月は焼けない。",
+    ch: [{ l: "今月は休む", fx: {}, mods: { sick: true }, r: "1か月、しっかり休むことにした。" }] };
+  D.STOP = { id: "stop", who: "", t: "決めておいた、やめる条件", d: "始めるときに決めた「{rule}」に、触れた。",
+    ch: [
+      { l: "やめる", fx: { quit: true }, mods: { sick: true }, word: "sunk", r: "ここでやめることにした。使ったお金と時間は戻らない。でも、分かったことは残る。" },
+      { l: "続ける", fx: {}, mods: {}, r: "続けることにした。" },
+      { l: "元手を3万円足して続ける", fx: { cash: 30000, topup: true }, mods: {}, r: "貯金から3万円を足して、続けることにした。" }
+    ] };
+  D.STOP_RULES = [
+    { id: "cash", l: "元手が1万円を切ったら" },
+    { id: "loss3", l: "3か月続けて赤字なら" },
+    { id: "none", l: "決めない" }
+  ];
+
+  // ---------------- ことば（15） ----------------
+  D.WORDS = [
+    { id: "mvp", w: "MVP", m: "いちばん小さな形で出して、反応を見ること。" },
+    { id: "opportunity", w: "機会費用", m: "選ばなかったほうで、分かったはずのこと・得たはずのもの。" },
+    { id: "momtest", w: "マム・テスト", m: "意見ではなく、あったことを聞く。" },
+    { id: "hourly", w: "時給換算", m: "利益を、使った時間で割った数字。" },
+    { id: "unitprice", w: "単価×数量", m: "売上は、1つの値段と売れた数のかけ算。" },
+    { id: "breakeven", w: "損益分岐点", m: "かかったお金と、入ったお金が並ぶところ。" },
+    { id: "runway", w: "ランウェイ", m: "このままのペースで、あと何か月続けられるか。" },
+    { id: "diff", w: "差別化", m: "ほかとのちがいを、1つ決めること。" },
+    { id: "single", w: "単一顧客依存", m: "売上が、1つの相手に偏っている状態。" },
+    { id: "switching", w: "スイッチングコスト", m: "ほかに乗りかえる手間。常連さんは、これで続けて選んでくれる。" },
+    { id: "jcurve", w: "Jカーブ", m: "先に下がって、あとで上がる。" },
+    { id: "sunk", w: "サンクコスト", m: "使ってしまって、もう戻らない時間やお金。続けるかどうかは、これから先で決める。" },
+    { id: "exitrule", w: "撤退基準", m: "やめる条件を、始める前に決めておくこと。" },
+    { id: "job", w: "ジョブ理論", m: "お客さんは、用事を片づけるために買う、という考え方。" },
+    { id: "askhelp", w: "助けを求める力", m: "ひとりで抱えずに、人に頼る力。" }
+  ];
+
+  D.REAL_KINDS = [
+    { id: "ask", l: "誰か1人に、話を聞く" },
+    { id: "make", l: "何か1つ、作ってみる" },
+    { id: "quit", l: "何か1つ、やめる" },
+    { id: "own", l: "自分で決める" }
+  ];
+  D.REAL_STOPS = ["1回やって、合わないと分かったら", "1週間たっても、手がつかなかったら", "もっと大事な用事が入ったら", "自分で決める"];
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* わたし株式会社 試作2「週末の焼き菓子」：しくみ（画面に依存しない）
+   ・1ターン＝1か月、12か月で1年。お金は円、時間は時間、ヒトは名前のある人と常連さん。
+   ・売れ方は「値段・作る数・売る場所・工夫・使った時間」で決まる。サイコロではなく、理由が書ける形。
+     （同じ月の小さなゆれだけは乱数。乱数は月で決まるので、同じ月に同じ選択をすれば同じ結果）
+   ・だれが本当に買うのか（お客さん）、その人は何のために買うのか（用事）、いくらまで払うのか（値段）は、
+     遊ぶたびに変わり、見えない。「あったことを聞く」と「売ってみる」でだけ、少しずつ分かる。 */
+(function (root) {
+  var WK2 = root.WK2 = root.WK2 || {};
+  var D = WK2.DATA;
+  var E = WK2.engine = {};
+
+  function hashStr(s) { var h = 2166136261 >>> 0; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function rng(seed, tag) {
+    var a = hashStr(seed + "|" + tag);
+    return function () { a |= 0; a = (a + 0x6D2B79F5) | 0; var t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function yen(v) { return Math.round(v); }
+  E.clone = clone; E.rng = rng;
+  var MONTHS = ["4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月", "1月", "2月", "3月"];
+  E.monthLabel = function (m) { return MONTHS[m % 12]; };
+  var WORD = {}; D.WORDS.forEach(function (w) { WORD[w.id] = w; }); E.word = function (id) { return WORD[id]; };
+
+  // ---------- 呼び名 ----------
+  E.segLabel = function (G, s) { var l = D.SEGS[s].label; return typeof l === "string" ? l : l[G.meta.role]; };
+  E.segJob = function (G, s) { var j = D.SEGS[s].job; return typeof j === "string" ? j : j[G.meta.role]; };
+  E.chLabel = function (G, c) { var l = D.CHANNELS[c].label; return typeof l === "string" ? l : l[G.meta.role]; };
+  E.chShort = function (G, c) { var l = D.CHANNELS[c].short; return typeof l === "string" ? l : l[G.meta.role]; };
+  E.fill = function (t, G) {
+    var R = D.ROLES[G.meta.role], S = G.live;
+    return String(t || "").replace(/\{place\}/g, R.place).replace(/\{job\}/g, R.job).replace(/\{friend\}/g, R.friend)
+      .replace(/\{friendName\}/g, "ミカ").replace(/\{bigFrom\}/g, S && S.bakery ? "佐藤さん（パン屋のイベント）" : (G.meta.role === "student" ? "文化祭の実行委員" : "職場の別の部署"))
+      .replace(/\{rule\}/g, (D.STOP_RULES.filter(function (x) { return x.id === G.meta.rule; })[0] || {}).l || "");
+  };
+
+  // ---------- 始める ----------
+  E.newGame = function (opt) {
+    var role = D.ROLES[opt.role] ? opt.role : "worker", R = D.ROLES[role];
+    var seed = opt.seed || (Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36));
+    var r = rng(seed, "truth");
+    var x = r(), main = x < 0.42 ? "B" : x < 0.8 ? "C" : "A";
+    var others = ["A", "B", "C"].filter(function (s) { return s !== main; });
+    if (r() < 0.5) others.reverse();
+    var need = {}; need[main] = 0.9; need[others[0]] = 0.4; need[others[1]] = 0.25;
+    var wtp = {};
+    ["A", "B", "C"].forEach(function (s) {
+      var base = typeof D.SEGS[s].wtp === "number" ? D.SEGS[s].wtp : D.SEGS[s].wtp[role];
+      wtp[s] = Math.round(base * (0.92 + r() * 0.16) / 10) * 10;
+    });
+    var S = {
+      m: 0, cash: R.cash, energy: 80, price: 300, make: 20, cost: 120, smaller: false,
+      bakery: false, bakeryOffer: false, onlineReady: false, invited: false,
+      feat: { label: false, wrap: false, flavor: 0 }, oven: 1, kitchen: false, helper: false, helperSpot: false,
+      reg: { A: 0, B: 0, C: 0 }, net: 10, ev: { who: 0, job: 0, wtp: 0 }, quotes: [], opinions: 0,
+      rival: 0, freeTrial: false, qBonus: 0, sellMonths: 0, cum: 0, minCum: 0, lossStreak: 0, stopSnooze: 0,
+      last: null, next: null, quit: false, mods: null,
+      plan: { price: 300, make: 20, ch: { work: true, friends: true, bakery: true, online: true }, acts: [], trial: null, interviews: [], helperUse: false, kitchenUse: true }
+    };
+    var G = {
+      v: 2, seed: seed,
+      meta: { name: (opt.name || "").trim() || "わたしの焼き菓子", role: role, rule: opt.rule || "none",
+        truth: { main: main, need: need, wtp: wtp }, words: {}, forks: 0, forkLog: [], real: [], notes: [],
+        session: { at: Date.now(), tries: 0, turns: 0 }, created: Date.now() },
+      nodes: {}, cur: "n1", nextId: 2, live: null
+    };
+    G.nodes.n1 = { id: "n1", parent: null, m: 0, start: S, log: null, fork: null };
+    G.live = clone(S); G.liveOf = "n1";
+    if (G.meta.rule !== "none") gainWord(G, "exitrule", null);
+    return G;
+  };
+
+  // ---------- 木 ----------
+  E.node = function (G, id) { return G.nodes[id || G.cur]; };
+  E.ensureLive = function (G) {
+    var n = G.nodes[G.cur];
+    if (!G.live || G.liveOf !== G.cur) { G.live = clone(n.start); G.liveOf = G.cur; }
+    return G.live;
+  };
+  E.path = function (G, id) { var out = [], n = G.nodes[id || G.cur]; while (n) { out.push(n); n = n.parent ? G.nodes[n.parent] : null; } return out.reverse(); };
+  E.routes = function (G) {
+    var has = {}; Object.keys(G.nodes).forEach(function (k) { var p = G.nodes[k].parent; if (p) has[p] = true; });
+    var leaves = Object.keys(G.nodes).filter(function (k) { return !has[k]; });
+    leaves.sort(function (a, b) { return (a === G.cur ? -1 : 0) - (b === G.cur ? -1 : 0) || G.nodes[b].m - G.nodes[a].m; });
+    return leaves.map(function (id) {
+      var p = E.path(G, id), f = null;
+      for (var i = p.length - 1; i >= 0; i--) if (p[i].fork) { f = p[i]; break; }
+      var lastLog = null; for (var j = p.length - 1; j >= 0; j--) if (p[j].log) { lastLog = p[j]; break; }
+      return { leaf: id, path: p, fork: f ? f.fork : null, forkM: f ? f.m : 0, current: id === G.cur, end: p[p.length - 1].start, lastLog: lastLog };
+    });
+  };
+  function gainWord(G, id, out) {
+    if (!WORD[id] || G.meta.words[id]) return;
+    G.meta.words[id] = { m: G.live ? G.live.m : 0, at: Date.now() };
+    if (out) out.push(id);
+  }
+  E.gainWord = gainWord;
+
+  // ---------- 今月の場面 ----------
+  E.scene = function (G) {
+    var n = G.nodes[G.cur], S = E.ensureLive(G);
+    if (n.sceneId) return E.sceneById(n.sceneId);
+    var id;
+    if (S.energy < 25) id = "sick";
+    else if (S.stopSnooze <= 0 && G.meta.rule === "cash" && S.cash < 10000 && S.m > 0) id = "stop";
+    else if (S.stopSnooze <= 0 && G.meta.rule === "loss3" && S.lossStreak >= 3) id = "stop";
+    else id = (D.SCENES.filter(function (x) { return x.m === S.m; })[0] || {}).id;
+    n.sceneId = id;
+    return E.sceneById(id);
+  };
+  E.sceneById = function (id) { if (id === "sick") return D.SICK; if (id === "stop") return D.STOP; return D.SCENES.filter(function (x) { return x.id === id; })[0]; };
+  E.sceneTitle = function (G, sc) { var t = sc.t; return typeof t === "string" ? E.fill(t, G) : t[G.meta.role]; };
+
+  E.resolveScene = function (G, idx) {
+    var n = G.nodes[G.cur], S = E.ensureLive(G), sc = E.scene(G);
+    if (!sc || n.sceneDone) return null;
+    var ch = sc.ch[idx] || sc.ch[0], fx = ch.fx || {}, words = [], quotes = [];
+    S.mods = clone(ch.mods || {});
+    S.extra = 0;
+    if (fx.price !== undefined) { S.price = fx.price; S.plan.price = fx.price; }
+    if (fx.make !== undefined) { S.make = fx.make; S.plan.make = fx.make; }
+    if (fx.priceAdd) { S.plan.price = clamp(S.plan.price + fx.priceAdd, 200, 900); }
+    if (fx.cost) S.cost = fx.cost;
+    if (fx.smaller) S.smaller = true;
+    if (fx.invited) S.invited = true;
+    if (fx.bakery) { S.bakery = true; S.plan.ch.bakery = true; }
+    if (fx.bakeryOffer) S.bakeryOffer = true;
+    if (fx.energy) S.energy = clamp(S.energy + fx.energy, 0, 100);
+    if (fx.cash) { S.cash += fx.cash; if (!fx.topup) S.extra += -fx.cash; }
+    if (fx.topup) { S.stopSnooze = 3; }
+    if (fx.helper) S.helper = true;
+    if (fx.helperSpot) S.helperSpot = true;
+    if (fx.oven) S.oven = fx.oven;
+    if (fx.kitchen) { S.kitchen = true; S.plan.kitchenUse = true; }
+    if (fx.freeTrial) S.freeTrial = true;
+    if (fx.rival) S.rival = fx.rival;
+    if (fx.next) S.next = fx.next;
+    if (fx.quit) S.quit = true;
+    if (sc.id === "stop" && !fx.quit && !fx.topup) S.stopSnooze = 2;
+    if (ch.word) gainWord(G, ch.word, words);
+    // その場で聞く
+    if (S.mods.freeAsk) {
+      var chn = S.last && S.last.topCh ? S.last.topCh : "work";
+      quotes.push(interview(G, S, chn, S.mods.freeAsk, rng(G.seed, "free|" + S.m)));
+      if (S.mods.freeAsk === "fact") gainWord(G, "momtest", words);
+    }
+    if (S.mods.visit) { quotes.push(interview(G, S, "market", "fact", rng(G.seed, "visit|" + S.m))); gainWord(G, "momtest", words); }
+    checkKnown(G, S, words);
+    n.sceneDone = { idx: idx, label: ch.l };
+    return { scene: sc, choice: ch, text: E.fill(ch.r, G), words: words, quotes: quotes };
+  };
+
+  // ---------- 話を聞く ----------
+  function interview(G, S, chn, ask, r) {
+    var T = G.meta.truth, mix = D.CHANNELS[chn].mix;
+    var x = r(), seg = x < mix.A ? "A" : x < mix.A + mix.B ? "B" : "C";
+    var isMain = seg === T.main, q;
+    if (ask === "opinion") {
+      q = { seg: seg, ch: chn, ask: ask, kind: "opinion", text: D.OPINIONS[Math.floor(r() * D.OPINIONS.length)], m: S.m };
+      S.opinions++;
+    } else {
+      var pool = D.QUOTES[seg][isMain ? "main" : "other"];
+      if (!Array.isArray(pool)) pool = pool[G.meta.role];
+      q = { seg: seg, ch: chn, ask: ask, kind: "fact", text: pool[Math.floor(r() * pool.length)], m: S.m, main: isMain };
+      S.ev.who = clamp(S.ev.who + (isMain ? 30 : 15), 0, 100);
+      S.ev.job = clamp(S.ev.job + (isMain ? 40 : 5), 0, 100);
+      S.ev.wtp = clamp(S.ev.wtp + (isMain ? 35 : 5), 0, 100);
+    }
+    S.quotes.push(q);
+    if (S.quotes.length > 40) S.quotes.shift();
+    return q;
+  }
+  function checkKnown(G, S, words) {
+    if (S.ev.job >= 60) gainWord(G, "job", words);
+  }
+  E.wtpWithKey = function (G) { var T = G.meta.truth; return Math.round((T.wtp[T.main] * 1.12 + (T.main === "C" ? 120 : 0)) / 10) * 10; };
+  E.known = function (G, S) {
+    S = S || G.live;
+    return { who: S.ev.who >= 60, job: S.ev.job >= 60, wtp: S.ev.wtp >= 60 };
+  };
+
+  // ---------- 作戦の時間とお金 ----------
+  E.makeRate = function (S) { return 0.15 * (S.oven >= 2 ? 0.55 : S.kitchen && S.plan.kitchenUse ? 0.7 : 1); };
+  E.hoursAvail = function (G, S) {
+    S = S || G.live; var mods = S.mods || {};
+    var h = D.ROLES[G.meta.role].hours + (mods.hours || 0);
+    if (S.helper) h += 16;
+    if (S.helperSpot && S.plan.helperUse) h += 10;
+    return h;
+  };
+  E.planHours = function (G, S) {
+    S = S || G.live; var p = S.plan, mods = S.mods || {};
+    if (mods.sick) return 0;
+    if (mods.recipe) return 8;
+    var h = (mods.preorder ? 0 : p.make * E.makeRate(S));
+    (p.acts || []).forEach(function (a) { h += D.ACTIONS[a].hours; });
+    if (mods.market && (p.acts || []).indexOf("market") < 0) h += D.ACTIONS.market.hours;
+    if (S.onlineReady && p.ch.online) h += 1;
+    return Math.round(h * 10) / 10;
+  };
+  E.unitCost = function (S, wrapMonth) {
+    return S.cost + (S.feat.label ? 10 : 0) + ((S.feat.wrap || wrapMonth) ? 50 : 0);
+  };
+  E.availableActs = function (G, S) {
+    S = S || G.live; var mods = S.mods || {};
+    var out = ["interview", "trial", "sns", "rest"];
+    if ((S.invited && S.m >= 2) || mods.market) out.splice(1, 0, "market");
+    if (S.m >= 6 && !S.onlineReady) out.push("online");
+    return out;
+  };
+
+  function pf(P, W) { return 1 / (1 + Math.exp(7 * (P / W - 1))); }
+
+  // ---------- 1か月やってみる ----------
+  E.run = function (G) {
+    var n = G.nodes[G.cur], S = E.ensureLive(G);
+    if (n.log || !n.sceneDone) return null;
+    var T = G.meta.truth, R = D.ROLES[G.meta.role], mods = S.mods || {}, p = S.plan;
+    var r = rng(G.seed, "run|" + S.m);
+    var words = [], why = [], quotes = [];
+    var price = mods.lock && mods.onlyWork ? S.price : p.price;
+    S.price = price;
+    var last = S.last;
+    var res = { m: S.m, price: price, ch: {}, made: 0, sold: 0, demand: 0, missed: 0, wasted: 0, revenue: 0, cost: { material: 0, market: 0, trial: 0, help: 0, kitchen: 0, online: 0, other: S.extra || 0 },
+      profit: 0, hours: 0, avail: E.hoursAvail(G, S), regSold: 0, bigSold: 0, newReg: 0, quotes: [], acts: (p.acts || []).slice(), free: !!mods.free };
+
+    // 試作（今月の工夫を先に足す）
+    var trialDone = null;
+    if ((p.acts || []).indexOf("trial") >= 0 && p.trial && !mods.sick) {
+      if (p.trial === "flavor") S.feat.flavor = Math.min(3, S.feat.flavor + 1); else S.feat[p.trial] = true;
+      trialDone = p.trial;
+      if (!S.freeTrial) res.cost.trial = D.ACTIONS.trial.cash;
+      if (S.freeTrial) { S.freeTrial = false; gainWord(G, "diff", words); }
+      S.rival = 0;
+    }
+    if ((p.acts || []).indexOf("online") >= 0 && !mods.sick) S.onlineReady = true;
+
+    if (mods.sick) {
+      S.energy = clamp(S.energy + 35, 0, 100);
+      why.push("今月は焼かずに休んだ。売上はない。常連さんの何人かは、ほかの店で買ったかもしれない。");
+      ["A", "B", "C"].forEach(function (s) { S.reg[s] = Math.floor(S.reg[s] * 0.85); });
+      return finish(G, S, n, res, why, words, quotes);
+    }
+    if (mods.recipe) {
+      S.qBonus = 0.04; res.hours = 8;
+      why.push("1か月、レシピを直した。味は少し良くなった。でも、だれにも食べてもらっていないので、だれが買ってくれそうかは、まだ何も分からない。");
+      gainWord(G, "opportunity", words);
+      S.energy = clamp(S.energy + 5, 0, 100);
+      return finish(G, S, n, res, why, words, quotes);
+    }
+
+    // 売る場所
+    var active = [];
+    if (p.ch.work || mods.onlyWork) active.push("work");
+    if (!mods.onlyWork && p.ch.friends) active.push("friends");
+    if (!mods.onlyWork && (mods.market || (p.acts || []).indexOf("market") >= 0)) active.push("market");
+    if (!mods.onlyWork && ((S.bakery && p.ch.bakery) || mods.bakeryTrial)) active.push("bakery");
+    if (!mods.onlyWork && S.onlineReady && p.ch.online) active.push("online");
+    if (mods.free) active = ["friends", "work"];
+    if (active.indexOf("market") >= 0) S.marketDone = (S.marketDone || 0) + 1;
+
+    var wrapNow = S.feat.wrap || !!mods.wrapMonth;
+    var flavorBoost = 1 + 0.3 * Math.min(3, S.feat.flavor);
+    // その人たちに合う工夫：買う人が増え、払ってもいい値段も上がる
+    function keyOn(s) { var k = D.SEGS[s].key; return k === "label" ? S.feat.label : k === "wrap" ? wrapNow : S.feat.flavor > 0; }
+    function boost(s) {
+      var k = D.SEGS[s].key;
+      if (k === "label") return S.feat.label ? 1.9 : 1;
+      if (k === "wrap") return wrapNow ? 1.9 : 1;
+      return flavorBoost;
+    }
+    function W(s) { return T.wtp[s] * (keyOn(s) ? 1.12 : 1) + (s === "C" && wrapNow ? 120 : 0) - (S.smaller ? 30 : 0); }
+    var q = 0.85 + 0.03 * Math.min(3, S.feat.flavor) + (S.oven >= 2 ? 0.02 : 0) + (S.qBonus || 0) - (S.energy < 40 ? 0.08 : 0) - (S.smaller ? 0.05 : 0);
+    var qf = clamp(0.6 + q * 0.5, 0.8, 1.15);
+    var demand = {}, newBuyers = {}, newBuyersGw = {}, segBuy = { A: 0, B: 0, C: 0 };
+    active.forEach(function (c) {
+      var C = D.CHANNELS[c];
+      var expo = c === "work" ? (G.meta.role === "student" ? 30 : 25) : c === "friends" ? S.net : C.exposure;
+      if (c === "bakery" && mods.bakeryTrial && !S.bakery) expo = C.exposure * 0.5;
+      var Pc = c === "bakery" ? C.retail : c === "online" ? price + C.ship : price;
+      var rivalM = S.rival > 0 && (c === "market" || c === "bakery") ? 0.75 : 1;
+      var b = 0, bs = {};
+      // 知り合いの応援：最初は買ってくれるが、売り始めて何か月かすると落ちつく
+      var gw = C.goodwill ? 0.22 * Math.max(0.25, 1 - 0.18 * S.sellMonths) * pf(Pc, 450) : 0;
+      ["A", "B", "C"].forEach(function (s) {
+        var seasonM = s === "C" && mods.season ? mods.season : 1;
+        var v = expo * C.mix[s] * (T.need[s] * pf(Pc, W(s)) * boost(s) * C.conv * seasonM * rivalM * qf + gw);
+        bs[s] = v; b += v;
+      });
+      newBuyersGw[c] = expo * gw;
+      var noise = 0.9 + 0.2 * r();
+      b *= noise;
+      var units = 0;
+      ["A", "B", "C"].forEach(function (s) { units += bs[s] * noise * (s === "C" ? 1.8 : 1.3); });
+      if (mods.free) units = Math.min(expo * 0.6, 20);
+      demand[c] = units; newBuyers[c] = { total: b, bySeg: bs, noise: noise, expo: expo, P: Pc };
+    });
+    // 常連さん
+    var regDemand = 0, regBy = {};
+    ["A", "B", "C"].forEach(function (s) { var d = S.reg[s] * 0.55 * pf(price, W(s) * 1.15) * 1.3; regBy[s] = d; regDemand += d; });
+    if (mods.free) regDemand = 0;
+    var big = mods.big || 0;
+    var chDemand = 0; Object.keys(demand).forEach(function (c) { chDemand += demand[c]; });
+    var totalD = chDemand + regDemand + big;
+    // 作る数
+    var make = mods.preorder ? Math.round(totalD) : p.make;
+    if (mods.preorder) {
+      var cap = Math.max(0, (res.avail - E.planHours(G, S)) / E.makeRate(S));
+      make = Math.min(make, Math.floor(cap));
+    }
+    res.made = make;
+    // 配る：大口 → 常連 → 売る場所の順
+    var left = make;
+    var bigSold = Math.min(big, left); left -= bigSold;
+    var regSold = Math.min(regDemand, left); left -= regSold;
+    var share = chDemand > 0 ? Math.min(1, left / chDemand) : 0;
+    var soldCh = {};
+    Object.keys(demand).forEach(function (c) { soldCh[c] = demand[c] * share; });
+    var soldTotal = bigSold + regSold; Object.keys(soldCh).forEach(function (c) { soldTotal += soldCh[c]; });
+    // 整数にする
+    bigSold = Math.round(bigSold); regSold = Math.round(regSold);
+    Object.keys(soldCh).forEach(function (c) { soldCh[c] = Math.round(soldCh[c]); });
+    soldTotal = bigSold + regSold; Object.keys(soldCh).forEach(function (c) { soldTotal += soldCh[c]; });
+    if (soldTotal > make) { var over = soldTotal - make; var cs = Object.keys(soldCh).sort(function (a, b) { return soldCh[b] - soldCh[a]; }); if (cs.length) soldCh[cs[0]] = Math.max(0, soldCh[cs[0]] - over); soldTotal = make; }
+    if (soldTotal > 0 && !mods.free) S.sellMonths++;
+    res.sold = soldTotal; res.demand = Math.round(totalD); res.missed = Math.max(0, Math.round(totalD) - soldTotal); res.wasted = Math.max(0, make - soldTotal);
+    res.regSold = regSold; res.bigSold = bigSold;
+    // お金
+    var revenue = 0;
+    Object.keys(soldCh).forEach(function (c) {
+      var u = soldCh[c], rv;
+      if (mods.free) rv = 0;
+      else if (c === "bakery") rv = u * D.CHANNELS.bakery.wholesale;
+      else if (c === "online") { rv = u * price * (1 - D.CHANNELS.online.fee); res.cost.online += u * D.CHANNELS.online.ship; }
+      else rv = u * price;
+      revenue += rv;
+      res.ch[c] = { expo: Math.round(newBuyers[c].expo), buyers: Math.round(newBuyers[c].total), sold: u, demand: Math.round(demand[c]), revenue: yen(rv), P: newBuyers[c].P };
+    });
+    revenue += regSold * price + bigSold * 250;
+    res.revenue = yen(revenue);
+    res.cost.material = make * E.unitCost(S, mods.wrapMonth);
+    if (active.indexOf("market") >= 0) res.cost.market = D.ACTIONS.market.cash;
+    if (S.helperSpot && p.helperUse) res.cost.help = 3000;
+    if (S.kitchen && p.kitchenUse) res.cost.kitchen = 5000;
+    var costTotal = 0; Object.keys(res.cost).forEach(function (k) { costTotal += res.cost[k]; });
+    var profit = revenue - costTotal;
+    res.mikaShare = 0;
+    if (S.helper && profit > 0) { res.mikaShare = yen(profit * 0.3); profit -= res.mikaShare; }
+    res.profit = yen(profit);
+    S.cash += res.profit + (S.extra || 0); // extra は場面で先に引いてあるので、二重に引かない
+    // 時間と体力
+    res.hours = E.planHours(G, S) + (mods.preorder ? make * E.makeRate(S) : 0);
+    res.hours = Math.round(res.hours * 10) / 10;
+    var over = res.hours - res.avail;
+    if (over > 0) { S.energy = clamp(S.energy - (5 + over * 2.5), 0, 100); }
+    else if (res.hours <= res.avail * 0.8) S.energy = clamp(S.energy + 8, 0, 100);
+    if ((p.acts || []).indexOf("rest") >= 0) S.energy = clamp(S.energy + 15, 0, 100);
+    res.energy = S.energy; res.quality = Math.round(q * 100) / 100;
+    // 常連が増える・減る
+    var sat = q >= 0.85 ? 1 : 0.5;
+    var shareSold = chDemand > 0 ? Object.keys(soldCh).reduce(function (a, c) { return a + soldCh[c]; }, 0) / chDemand : 0;
+    var newReg = 0;
+    if (!mods.free) ["A", "B", "C"].forEach(function (s) {
+      var nb = 0; Object.keys(newBuyers).forEach(function (c) { nb += newBuyers[c].bySeg[s] * newBuyers[c].noise; });
+      Object.keys(newBuyersGw).forEach(function (c) { nb -= newBuyersGw[c] * D.CHANNELS[c].mix[s] * newBuyers[c].noise * 0.7; });
+      nb = Math.max(0, nb);
+      segBuy[s] = nb * shareSold;
+      var add = segBuy[s] * 0.22 * sat;
+      var churn = price > W(s) * 1.2 ? 0.12 : 0.05;
+      S.reg[s] = Math.max(0, S.reg[s] * (1 - churn) + add);
+      newReg += add;
+    });
+    res.newReg = Math.round(newReg * 10) / 10;
+    res.regTotal = Math.round(S.reg.A + S.reg.B + S.reg.C);
+    // つながり
+    var netAdd = 0;
+    if (active.indexOf("market") >= 0) netAdd += 2;
+    if ((p.acts || []).indexOf("sns") >= 0) { netAdd += 2; }
+    if (mods.free) netAdd += 4;
+    if (soldCh.friends) netAdd += Math.round(soldCh.friends * 0.1);
+    S.net += netAdd; res.netAdd = netAdd;
+    // 話を聞く
+    var ivs = (p.acts || []).indexOf("interview") >= 0 ? (p.interviews || []) : [];
+    ivs.slice(0, 2).forEach(function (iv, k) {
+      var qq = interview(G, S, iv.ch, iv.ask, rng(G.seed, "iv|" + S.m + "|" + k + "|" + iv.ch + "|" + iv.ask));
+      quotes.push(qq);
+      if (iv.ask === "fact") gainWord(G, "momtest", words);
+    });
+    if (mods.free) { for (var o = 0; o < 3; o++) { quotes.push({ kind: "opinion", text: D.OPINIONS[(S.m + o) % D.OPINIONS.length], seg: null, ch: "friends", m: S.m }); S.opinions++; } }
+    // 売ってみると分かる
+    if (soldTotal >= 15 && !mods.free) { S.ev.who = clamp(S.ev.who + 6, 0, 100); S.ev.wtp = clamp(S.ev.wtp + 6, 0, 100); }
+    checkKnown(G, S, words);
+
+    // ---- なぜ（目に見えた事実だけを書く。本当の答えは書かない） ----
+    var order = ["work", "friends", "market", "bakery", "online"];
+    order.forEach(function (c) {
+      var x = res.ch[c]; if (!x) return;
+      var lbl = E.chShort(G, c);
+      if (mods.free) { why.push(lbl + "：" + x.sold + "袋を配った。"); return; }
+      var line = lbl + "：知ってくれた人 約" + x.expo + "人のうち、買ってくれたのは約" + Math.max(x.buyers, 0) + "人（" + x.sold + "袋）";
+      if (c === "bakery") line += "。店での値段は450円、こちらの手取りは1袋300円";
+      if (c === "online") line += "。送料200円はこちら持ち";
+      why.push(line + "。");
+      if (last && last.ch && last.ch[c] && last.price !== price && c !== "bakery") {
+        why.push("　値段を" + last.price + "円→" + price + "円にしたら、" + lbl + "の売れ数は" + last.ch[c].sold + "袋→" + x.sold + "袋になった。");
+      }
+    });
+    if (regSold) why.push("常連さんが" + regSold + "袋、また買ってくれた（常連さんは約" + res.regTotal + "人）。");
+    if (bigSold) why.push("大口の注文で" + bigSold + "袋（1袋250円）。売上の" + Math.round(bigSold * 250 / Math.max(1, revenue) * 10) + "割が、この1件。");
+    if (res.missed > 0 && !mods.free) why.push("売り切れ。欲しかったのに買えなかった人が、あと約" + res.missed + "袋分いた。");
+    if (res.wasted > 0 && !mods.free) why.push(res.wasted + "袋が売れ残った（材料費 約" + (res.wasted * E.unitCost(S, mods.wrapMonth)).toLocaleString() + "円分）。");
+    if (trialDone) why.push("今月から「" + D.FEATURES[trialDone].label + "」を加えた。" + (last ? "売れ数は先月の" + last.sold + "袋から" + soldTotal + "袋。" : ""));
+    if (res.hours > 0) {
+      var hourly = res.hours > 0 ? Math.round(res.profit / res.hours) : 0;
+      res.hourly = hourly;
+      why.push("使った時間は" + res.hours + "時間（使える時間は" + res.avail + "時間）。利益" + res.profit.toLocaleString() + "円 ÷ " + res.hours + "時間 ＝ 時給換算 " + hourly.toLocaleString() + "円。");
+      if (res.hours >= 8 && soldTotal > 0) gainWord(G, "hourly", words);
+    }
+    if (over > 0) why.push("使える時間を" + Math.round(over * 10) / 10 + "時間こえた。体力が落ちている（" + Math.round(S.energy) + "）。");
+    if (res.mikaShare) why.push("ミカと利益を分けた（" + res.mikaShare.toLocaleString() + "円）。");
+    // ことば
+    if (S.m === 0 && soldTotal > 0 && !mods.free) gainWord(G, "mvp", words);
+    if (res.ch.bakery && res.ch.bakery.sold > 0) gainWord(G, "unitprice", words);
+    if (bigSold && bigSold * 250 >= revenue * 0.5) gainWord(G, "single", words);
+    if (res.ch.bakery && res.ch.bakery.revenue >= revenue * 0.6 && revenue > 0) gainWord(G, "single", words);
+    if (res.regTotal >= 10) gainWord(G, "switching", words);
+    var prevCum = S.cum;
+    S.cum += res.profit;
+    S.minCum = Math.min(S.minCum, S.cum);
+    if (prevCum < 0 && S.cum >= 0) { gainWord(G, "breakeven", words); why.push("ここまでの利益の合計が、プラスにもどった（" + S.cum.toLocaleString() + "円）。"); }
+    if (S.minCum <= -10000 && S.cum >= 0) gainWord(G, "jcurve", words);
+    S.lossStreak = res.profit < 0 ? S.lossStreak + 1 : 0;
+    if (res.profit < 0 && S.cash > 0) {
+      res.runway = Math.floor(S.cash / -res.profit);
+      if (res.runway <= 12) { why.push("このままのペースだと、元手はあと約" + res.runway + "か月でなくなる。"); gainWord(G, "runway", words); }
+    }
+    if (S.stopSnooze > 0) S.stopSnooze--;
+    if (S.rival > 0) S.rival--;
+    var topCh = null; Object.keys(soldCh).forEach(function (c) { if (!topCh || soldCh[c] > soldCh[topCh]) topCh = c; });
+    res.topCh = topCh;
+    return finish(G, S, n, res, why, words, quotes);
+  };
+
+  function finish(G, S, n, res, why, words, quotes) {
+    res.why = why; res.words = words; res.quotes = quotes; res.cash = S.cash;
+    res.known = E.known(G, S);
+    n.log = res;
+    S.last = { m: res.m, price: res.price, sold: res.sold, ch: res.ch, topCh: res.topCh, profit: res.profit };
+    S.mods = null; S.extra = 0;
+    G.meta.session.turns++;
+    if ((res.acts || []).indexOf("interview") >= 0 || res.acts.length) G.meta.session.tries += res.acts.filter(function (a) { return a === "interview" || a === "market" || a === "trial"; }).length;
+    return res;
+  }
+
+  E.finished = function (G) { var n = G.nodes[G.cur], S = E.ensureLive(G); return !!n.log && (S.m >= 11 || S.quit); };
+  E.next = function (G) {
+    var n = G.nodes[G.cur], S = E.ensureLive(G);
+    if (!n.log || E.finished(G)) return false;
+    var nx = clone(S); nx.m = S.m + 1;
+    nx.plan.acts = []; nx.plan.trial = null; nx.plan.interviews = []; nx.plan.helperUse = false;
+    if (nx.plan.make === 0 && S.m === 0) { nx.plan.make = 30; }
+    var id = "n" + (G.nextId++);
+    G.nodes[id] = { id: id, parent: n.id, m: nx.m, start: nx, log: null, fork: null };
+    G.cur = id; G.live = clone(nx); G.liveOf = id;
+    return true;
+  };
+
+  // ---------- 戻る ----------
+  E.canRewind = function (G, id) { var t = G.nodes[id]; if (!t) return false; if (id === G.cur) return !!t.log; return E.path(G).indexOf(t) >= 0; };
+  E.rewind = function (G, id) {
+    if (!E.canRewind(G, id)) return null;
+    var t = G.nodes[id], nid = "n" + (G.nextId++), no = ++G.meta.forks;
+    G.nodes[nid] = { id: nid, parent: t.parent, m: t.m, start: clone(t.start), log: null, fork: { n: no, from: t.id, fromM: G.live ? G.live.m : t.m, at: Date.now() } };
+    G.meta.forkLog.push({ n: no, m: t.m, at: Date.now() });
+    G.cur = nid; G.live = clone(t.start); G.liveOf = nid;
+    return { n: no, m: t.m };
+  };
+  E.switchRoute = function (G, leafId) {
+    if (!G.nodes[leafId] || leafId === G.cur) return null;
+    var no = ++G.meta.forks; G.meta.forkLog.push({ n: no, m: G.nodes[leafId].m, at: Date.now(), kind: "switch" });
+    G.cur = leafId; G.live = null; E.ensureLive(G);
+    var n = G.nodes[leafId]; if (!n.log) { n.sceneDone = null; n.sceneId = null; }
+    return { n: no };
+  };
+
+  // ---------- 現実の一手 ----------
+  E.addReal = function (G, o) {
+    var S = E.ensureLive(G);
+    var it = { id: "r" + Date.now().toString(36) + Math.floor(Math.random() * 1000), m: S.m, kind: o.kind, text: o.text, stop: o.stop, status: "pending", at: Date.now() };
+    G.meta.real.push(it); return it;
+  };
+  E.pendingReal = function (G) { return G.meta.real.filter(function (x) { return x.status === "pending" || x.status === "partial"; }); };
+  E.resolveReal = function (G, id, status) {
+    var it = G.meta.real.filter(function (x) { return x.id === id; })[0]; if (!it) return null;
+    it.status = status; it.doneAt = Date.now();
+    if (status === "done") { var S = E.ensureLive(G); ["who", "job", "wtp"].forEach(function (k) { S.ev[k] = clamp(S.ev[k] + 10, 0, 100); }); }
+    return it;
+  };
+  E.realDone = function (G) { return G.meta.real.filter(function (x) { return x.status === "done"; }).length; };
+
+  // ---------- 1年のまとめ ----------
+  E.summary = function (G) {
+    var p = E.path(G).filter(function (n) { return n.log; });
+    var s = { months: p.length, revenue: 0, profit: 0, made: 0, sold: 0, wasted: 0, missed: 0, hours: 0, list: [], chUsed: {} };
+    p.forEach(function (n) {
+      var l = n.log; s.revenue += l.revenue; s.profit += l.profit; s.made += l.made; s.sold += l.sold; s.wasted += l.wasted; s.missed += l.missed; s.hours += l.hours;
+      Object.keys(l.ch || {}).forEach(function (c) { s.chUsed[c] = (s.chUsed[c] || 0) + l.ch[c].sold; });
+      s.list.push({ m: n.m, scene: n.sceneDone ? n.sceneDone.label : "", profit: l.profit, sold: l.sold });
+    });
+    var S = E.ensureLive(G), T = G.meta.truth;
+    s.hourly = s.hours ? Math.round(s.profit / s.hours) : 0;
+    s.reg = Math.round(S.reg.A + S.reg.B + S.reg.C);
+    s.cash = S.cash; s.net = S.net;
+    s.known = E.known(G, S);
+    s.truth = { main: E.segLabel(G, T.main), job: E.segJob(G, T.main), wtp: T.wtp[T.main], wtpKey: E.wtpWithKey(G), key: D.FEATURES[D.SEGS[T.main].key].label };
+    s.facts = S.quotes.filter(function (q) { return q.kind === "fact"; }).length;
+    s.opinions = S.opinions;
+    s.next = S.next; s.quit = S.quit;
+    return s;
+  };
+
+  E.exportJSON = function (G) { return JSON.stringify({ app: "watashi-yakigashi", data: G }); };
+  E.importJSON = function (t) { var o = JSON.parse(t), G = o && o.app === "watashi-yakigashi" ? o.data : null; if (!G || !G.nodes || !G.nodes[G.cur]) throw new Error("bad"); if (G.liveOf !== G.cur) { G.live = null; G.liveOf = null; } E.ensureLive(G); return G; };
+})(typeof window !== "undefined" ? window : globalThis);
+
+document.documentElement.lang = "ja";
+/* わたし株式会社 試作2「週末の焼き菓子」：画面 */
+(function () {
+  var WK2 = window.WK2, E = WK2.engine, D = WK2.DATA;
+  var KEY = "watashi-yakigashi.v1";
+  var G = null, ui = { sceneRes: null, warned: false, resting: false };
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function yen(v) { return (v < 0 ? "−" : "") + Math.abs(Math.round(v)).toLocaleString() + "円"; }
+  function sgn(v) { return (v > 0 ? "+" : v < 0 ? "−" : "±") + Math.abs(Math.round(v)).toLocaleString(); }
+  var embedded = (function () { try { return window.self !== window.top; } catch (e) { return true; } })();
+
+  function save() { if (!G) return; G.meta.lastActive = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(G)); } catch (e) { if (!ui.warned) { ui.warned = true; note("この端末には保存できませんでした。続けて遊ぶことはできます。"); } } }
+  function load() { try { var t = localStorage.getItem(KEY); if (!t) return null; var o = JSON.parse(t); if (!o || !o.nodes || !o.cur) return null; if (o.liveOf !== o.cur) { o.live = null; o.liveOf = null; } return o; } catch (e) { return null; } }
+  function note(t) { var b = $("#note"); if (b) { b.innerHTML = t; b.hidden = false; } }
+
+  // ---------- 上 ----------
+  function renderHud() {
+    var S = E.ensureLive(G), n = E.node(G);
+    $("#co").textContent = G.meta.name;
+    $("#mo").textContent = "1年目 " + E.monthLabel(S.m) + "（" + (S.m + 1) + " / 12か月）";
+    var lastProfit = S.last ? S.last.profit : null;
+    var reg = Math.round(S.reg.A + S.reg.B + S.reg.C);
+    var html = '<div class="kpi' + (S.cash < 10000 ? " warn" : "") + '"><span class="k">元手</span><span class="v num">' + yen(S.cash) + "</span></div>" +
+      '<div class="kpi' + (lastProfit < 0 ? " warn" : "") + '"><span class="k">先月の利益</span><span class="v num">' + (lastProfit === null ? "—" : yen(lastProfit)) + "</span></div>" +
+      '<div class="kpi"><span class="k">常連さん</span><span class="v num">' + reg + "<small>人</small></span></div>" +
+      '<div class="kpi' + (S.energy < 40 ? " warn" : "") + '"><span class="k">体力</span><span class="v num">' + Math.round(S.energy) + '</span><span class="bar"><i style="width:' + Math.round(S.energy) + '%"></i></span></div>';
+    $("#kpis").innerHTML = html;
+  }
+  function renderBanner() {
+    var out = [];
+    if (G.meta.forks) out.push("<p>あなたは、これまでに<b>" + G.meta.forks + "回</b>、方向を変えました。方向を変えた回数は、あなたが考えた回数です。</p>");
+    if (G.meta.real.length) out.push("<p>現実で動いた回数：<b>" + E.realDone(G) + "回</b></p>");
+    $("#banner").innerHTML = out.join("") + '<p id="note" class="hint" hidden></p>';
+  }
+
+  // ---------- 店の様子 ----------
+  function shop(S) {
+    var o = [], last = S.last, lg = E.node(G).log || (E.node(G).parent ? G.nodes[E.node(G).parent].log : null);
+    var made = lg ? lg.made : S.plan.make;
+    o.push('<rect class="o-wall" x="0" y="0" width="360" height="104"/><rect class="o-floor" x="0" y="104" width="360" height="56"/><line class="o-ln" x1="0" y1="104" x2="360" y2="104"/>');
+    // オーブン
+    for (var ov = 0; ov < (S.oven >= 2 ? 2 : 1); ov++) {
+      var ox = 14 + ov * 40;
+      o.push('<rect class="o-frame o-white" x="' + ox + '" y="58" width="34" height="34"/><rect class="o-frame o-paper" x="' + (ox + 5) + '" y="66" width="24" height="16"/><rect class="o-ink" x="' + (ox + 5) + '" y="60" width="24" height="3"/>');
+    }
+    if (S.kitchen) o.push('<text class="o-t" x="14" y="52">共同キッチン</text>');
+    // 台
+    o.push('<rect class="o-ink" x="10" y="94" width="130" height="4"/><line class="o-leg" x1="14" y1="98" x2="14" y2="150"/><line class="o-leg" x1="136" y1="98" x2="136" y2="150"/>');
+    var trays = Math.min(8, Math.ceil((made || 0) / 20));
+    for (var t = 0; t < trays; t++) o.push('<rect class="o-muted" x="' + (S.oven >= 2 ? 96 : 56) + '" y="' + (90 - t * 3) + '" width="' + (S.oven >= 2 ? 36 : 40) + '" height="2"/>');
+    // 人
+    o.push('<circle class="o-ink" cx="72" cy="' + (S.oven >= 2 ? 116 : 84) + '" r="6"/>');
+    if (S.helper || (S.helperSpot && S.plan.helperUse)) o.push('<circle class="o-muted" cx="92" cy="' + (S.oven >= 2 ? 118 : 86) + '" r="5"/><text class="o-t" x="100" y="' + (S.oven >= 2 ? 121 : 89) + '">ミカ</text>');
+    // 棚（作った袋）
+    o.push('<rect class="o-frame o-none" x="150" y="20" width="62" height="74"/>');
+    [44, 69].forEach(function (y) { o.push('<line class="o-leg" x1="150" y1="' + y + '" x2="212" y2="' + y + '"/>'); });
+    var bags = Math.min(30, Math.ceil((made || 0) / 5));
+    for (var b = 0; b < bags; b++) {
+      var row = Math.floor(b / 10), col = b % 10, cls = S.feat.flavor >= 1 && b % 3 === 1 ? "o-deep" : S.feat.flavor >= 2 && b % 3 === 2 ? "o-muted" : "o-ink";
+      if (S.feat.wrap) o.push('<rect class="' + cls + '" x="' + (153 + col * 5.8) + '" y="' + ([36, 61, 86][row]) + '" width="5" height="7"/>');
+      else o.push('<rect class="' + cls + '" x="' + (154 + col * 5.8) + '" y="' + ([34, 59, 84][row]) + '" width="4" height="9"/>');
+    }
+    if (S.feat.label) o.push('<rect class="o-pop" x="150" y="12" width="30" height="7"/><text class="o-t" x="183" y="18">ラベルつき</text>');
+    // 売る場所（先月使ったところ）
+    var used = last && last.ch ? last.ch : {};
+    var spots = [["work", 230, 14], ["market", 292, 14], ["bakery", 230, 56], ["online", 292, 56]];
+    spots.forEach(function (sp) {
+      var c = sp[0], x = sp[1], y = sp[2], on = !!used[c];
+      var avail = c === "work" || (c === "market" && S.invited) || (c === "bakery" && (S.bakery || S.bakeryOffer)) || (c === "online" && S.onlineReady);
+      if (!avail && !on) return;
+      var cls = on ? "o-ink" : "o-muted";
+      if (c === "work") o.push('<rect class="' + cls + '" x="' + x + '" y="' + (y + 20) + '" width="34" height="3"/><line class="o-leg" x1="' + (x + 3) + '" y1="' + (y + 23) + '" x2="' + (x + 3) + '" y2="' + (y + 34) + '"/><line class="o-leg" x1="' + (x + 31) + '" y1="' + (y + 23) + '" x2="' + (x + 31) + '" y2="' + (y + 34) + '"/>');
+      if (c === "market") o.push('<polygon class="' + cls + '" points="' + x + "," + (y + 14) + " " + (x + 18) + "," + y + " " + (x + 36) + "," + (y + 14) + '"/><rect class="o-frame o-white" x="' + (x + 4) + '" y="' + (y + 14) + '" width="28" height="18"/>');
+      if (c === "bakery") o.push('<rect class="o-frame o-white" x="' + x + '" y="' + (y + 6) + '" width="36" height="28"/><rect class="' + cls + '" x="' + x + '" y="' + y + '" width="36" height="6"/>');
+      if (c === "online") o.push('<rect class="o-frame o-white" x="' + (x + 10) + '" y="' + y + '" width="16" height="30"/><rect class="' + cls + '" x="' + (x + 13) + '" y="' + (y + 4) + '" width="10" height="16"/>');
+      var label = { work: G.meta.role === "student" ? "学校" : "職場", market: "マルシェ", bakery: "パン屋", online: "ネット" }[c];
+      o.push('<text class="o-t" x="' + (x + 18) + '" y="' + (y + 44) + '" text-anchor="middle">' + label + (on ? " " + used[c].sold + "袋" : "") + "</text>");
+    });
+    // 常連さん
+    var reg = Math.min(48, Math.round(S.reg.A + S.reg.B + S.reg.C));
+    for (var i = 0; i < reg; i++) o.push('<circle class="o-deep" cx="' + (160 + (i % 24) * 8) + '" cy="' + (124 + Math.floor(i / 24) * 10) + '" r="3"/>');
+    o.push('<text class="o-t" x="160" y="152">常連さん ' + Math.round(S.reg.A + S.reg.B + S.reg.C) + "人</text>");
+    if (S.cash < 10000) o.push('<rect class="o-dark" x="0" y="0" width="360" height="160" fill-opacity="' + (S.cash <= 0 ? 0.25 : 0.12) + '"/>');
+    return '<svg viewBox="0 0 360 160" role="img" aria-label="台所と売り場。作った袋が棚に、使った売り場と常連さんが右に描かれる">' + o.join("") + "</svg>";
+  }
+  function renderShop() {
+    var S = E.ensureLive(G);
+    var cap = "<span>作った袋が棚に、売った場所が右に、常連さんが下に並びます。元手が1万円を切ると、店が暗くなります。</span>";
+    $("#shop").innerHTML = shop(S) + '<div class="shop-cap">' + cap + "</div>";
+  }
+
+  // ---------- 帳簿（結果） ----------
+  function voicesHtml(qs) {
+    if (!qs || !qs.length) return "";
+    return '<div class="voices">' + qs.map(function (q) {
+      var who = q.seg ? E.segLabel(G, q.seg) : "知り合い";
+      var where = q.ch ? E.chShort(G, q.ch) : "";
+      return '<div class="voice ' + q.kind + '"><span class="tag">' + (q.kind === "fact" ? "あったこと" : "意見") + "｜" + esc(where ? where + "で聞いた" : "") + (q.kind === "fact" ? "（" + esc(who) + "）" : "") + "</span><span>「" + esc(q.text) + "」</span></div>";
+    }).join("") + "</div>";
+  }
+  function wordsHtml(ids) {
+    return (ids || []).map(function (id) { var w = E.word(id); return w ? '<div class="wordget"><span class="k">ことばを獲得</span><b>' + esc(w.w) + "</b><p>" + esc(w.m) + "</p></div>" : ""; }).join("");
+  }
+  function ledgerHtml(l, title) {
+    var chs = Object.keys(l.ch || {});
+    var tbl = "";
+    if (chs.length || l.regSold || l.bigSold) {
+      tbl = '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>売った場所</th><th>知った人</th><th>買った人</th><th>袋</th><th>売上</th></tr></thead><tbody>' +
+        chs.map(function (c) { var x = l.ch[c]; return "<tr><td>" + esc(E.chLabel(G, c)) + '</td><td class="num">' + x.expo + '</td><td class="num">' + Math.max(0, x.buyers) + '</td><td class="num">' + x.sold + '</td><td class="num">' + x.revenue.toLocaleString() + "</td></tr>"; }).join("") +
+        (l.regSold ? '<tr><td>常連さん</td><td></td><td></td><td class="num">' + l.regSold + '</td><td class="num">' + (l.regSold * l.price).toLocaleString() + "</td></tr>" : "") +
+        (l.bigSold ? '<tr><td>大口の注文</td><td></td><td></td><td class="num">' + l.bigSold + '</td><td class="num">' + (l.bigSold * 250).toLocaleString() + "</td></tr>" : "") +
+        "</tbody></table></div>";
+    }
+    var costs = l.cost, cl = [];
+    if (costs.material) cl.push("材料 " + costs.material.toLocaleString());
+    if (costs.market) cl.push("出店料 " + costs.market.toLocaleString());
+    if (costs.trial) cl.push("試作 " + costs.trial.toLocaleString());
+    if (costs.online) cl.push("送料 " + costs.online.toLocaleString());
+    if (costs.help) cl.push("手伝いのお礼 " + costs.help.toLocaleString());
+    if (costs.kitchen) cl.push("キッチン " + costs.kitchen.toLocaleString());
+    if (costs.other) cl.push("そのほか " + costs.other.toLocaleString());
+    return '<div class="panel"><span class="kicker">' + esc(title) + "</span>" +
+      '<div class="ledger-top">' +
+      '<div class="big"><span class="k">売れた / 作った</span><span class="v num">' + l.sold + " / " + l.made + '</span><span class="s">値段 ' + l.price + "円</span></div>" +
+      '<div class="big"><span class="k">売上</span><span class="v num">' + l.revenue.toLocaleString() + '</span><span class="s">円</span></div>' +
+      '<div class="big"><span class="k">利益</span><span class="v num' + (l.profit < 0 ? " neg" : "") + '">' + sgn(l.profit) + '</span><span class="s">円</span></div>' +
+      '<div class="big"><span class="k">時給換算</span><span class="v num' + ((l.hourly || 0) < 0 ? " neg" : "") + '">' + (l.hours ? sgn(l.hourly || 0) : "—") + '</span><span class="s">' + l.hours + "時間</span></div></div>" +
+      tbl + (cl.length ? '<p class="hint">かかったお金（円）：' + cl.join("・") + (l.mikaShare ? "・ミカと分けた " + l.mikaShare.toLocaleString() : "") + "</p>" : "") +
+      (l.why && l.why.length ? '<div class="why">' + l.why.map(function (w) { return "<p" + (w.charAt(0) === "　" ? ' class="sub"' : "") + ">" + esc(w.trim()) + "</p>"; }).join("") + "</div>" : "") +
+      voicesHtml(l.quotes) + wordsHtml(l.words) + "</div>";
+  }
+
+  // ---------- 今月 ----------
+  function renderFlow() {
+    var f = $("#flow"), S = E.ensureLive(G), n = E.node(G), html = "";
+    if (ui.resting) { f.innerHTML = '<div class="rest"><div><h2>今日はここまで</h2><p>また来たときに、現実の一手がどうだったか聞かせてください。</p></div><button class="btn" data-act="resume">続きを遊ぶ</button></div>'; return; }
+    if (n.log) {
+      html += ledgerHtml(n.log, "1年目 " + E.monthLabel(n.m) + "の結果");
+      var fin = E.finished(G);
+      html += '<div class="go"><button class="btn pri wide" data-act="' + (fin ? "year" : "next") + '">' + (fin ? "1年の決算を見る" : "次の月へ") + '</button><button class="linkish" data-act="redo">この月を選び直す</button></div>';
+      f.innerHTML = html; return;
+    }
+    var prev = n.parent ? G.nodes[n.parent].log : null;
+    if (prev && !n.sceneDone) html += ledgerHtml(prev, "先月（" + E.monthLabel(prev.m) + "）の帳簿");
+    var sc = E.scene(G);
+    html += '<div class="panel scene"><span class="kicker">1年目 ' + E.monthLabel(S.m) + "｜今月の場面</span>" + (sc.who ? '<span class="who">' + esc(E.fill(sc.who, G)) + "</span>" : "") +
+      "<h2>" + esc(E.sceneTitle(G, sc)) + '</h2><p class="txt">' + esc(E.fill(sc.d, G)) + "</p>";
+    if (!n.sceneDone) {
+      html += '<div class="choices">' + sc.ch.map(function (c, i) {
+        if (sc.id === "stop" && i === 2 && false) return "";
+        return '<button class="btn wide" data-act="scene" data-i="' + i + '">' + esc(E.fill(c.l, G)) + "</button>";
+      }).join("") + "</div></div>";
+      f.innerHTML = html; return;
+    }
+    html += '<p class="picked"><b>' + esc(E.fill(n.sceneDone.label, G)) + "</b>　" + (ui.sceneRes ? esc(ui.sceneRes.text) : "") + "</p>" + (ui.sceneRes ? voicesHtml(ui.sceneRes.quotes) + wordsHtml(ui.sceneRes.words) : "") + "</div>";
+    html += planHtml(S);
+    f.innerHTML = html;
+  }
+
+  var TRY_LABEL = { label: "原材料のラベル", wrap: "個包装と箱", flavor: "新しい味" };
+  function planHtml(S) {
+    var p = S.plan, mods = S.mods || {}, html = '<div class="panel plan"><span class="kicker">今月の作戦</span>';
+    if (mods.lock || mods.sick) {
+      var msg = mods.sick ? "今月は休みます。" : mods.recipe ? "今月は売らずに、レシピを直します（8時間）。" : mods.free ? "20袋を知り合いに配って、感想をもらいます。" : "20袋を、" + D.ROLES[G.meta.role].place + "で1袋300円で売ってみます。";
+      html += '<p class="txt">' + msg + '</p><button class="btn pri wide" data-act="run">この形で1か月やってみる</button></div>';
+      return html;
+    }
+    var avail = E.hoursAvail(G, S), used = E.planHours(G, S), over = used > avail;
+    var uc = E.unitCost(S, mods.wrapMonth);
+    // 値段
+    html += '<div class="row-set"><span class="lab">1袋の値段</span><div class="stepper"><button type="button" data-act="p-" aria-label="値段を50円下げる">−</button><span class="val num">' + p.price + '円</span><button type="button" data-act="p+" aria-label="値段を50円上げる">＋</button><span class="note">材料費 1袋' + uc + "円</span></div></div>";
+    // 作る数
+    html += '<div class="row-set"><span class="lab">作る数</span>' + (mods.preorder ? '<p class="txt">予約の分だけ作ります。</p>' :
+      '<div class="stepper"><button type="button" data-act="m-" aria-label="10袋減らす">−</button><span class="val num">' + p.make + '袋</span><button type="button" data-act="m+" aria-label="10袋増やす">＋</button><span class="note">焼く時間 ' + (Math.round(p.make * E.makeRate(S) * 10) / 10) + "時間</span></div>") + "</div>";
+    var pl = E.node(G).parent ? G.nodes[E.node(G).parent].log : null;
+    if (pl && !mods.preorder) html += '<p class="hint">先月：' + pl.made + "袋作って" + pl.sold + "袋売れた" + (pl.wasted ? "・" + pl.wasted + "袋売れ残り" : "") + (pl.missed ? "・売り切れで約" + pl.missed + "袋分買えなかった人がいた" : "") + (pl.bigSold ? "（うち大口" + pl.bigSold + "袋）" : "") + "</p>";
+    if (mods.big) html += '<p class="hint">大口の注文 ' + mods.big + "袋（1袋250円）は、作った数から先に回します。いつもの分と合わせて作ってください。</p>";
+    // 売る場所
+    var chips = [["work", true], ["friends", true]];
+    if (S.bakery) chips.push(["bakery", true]);
+    if (S.onlineReady) chips.push(["online", true]);
+    html += '<div class="row-set"><span class="lab">売る場所</span><div class="chips">' + chips.map(function (c) {
+      return '<button type="button" class="chip" data-act="ch" data-ch="' + c[0] + '" aria-pressed="' + (p.ch[c[0]] ? "true" : "false") + '">' + esc(E.chLabel(G, c[0])) + "</button>";
+    }).join("") + (mods.bakeryTrial ? '<span class="chip" aria-pressed="true">佐藤さんのパン屋（今月だけ）</span>' : "") + (mods.market ? '<span class="chip" aria-pressed="true">マルシェ（田中さんの誘い）</span>' : "") + "</div></div>";
+    // 今月やること
+    var acts = E.availableActs(G, S).filter(function (a) { return !(a === "market" && mods.market); });
+    html += '<div class="row-set"><span class="lab">今月やること</span><div class="chips">' + acts.map(function (a) {
+      var A = D.ACTIONS[a], on = (p.acts || []).indexOf(a) >= 0;
+      var cost = a === "trial" && S.freeTrial ? "無料" : A.cash ? A.cash.toLocaleString() + "円" : "";
+      return '<button type="button" class="chip" data-act="act" data-a="' + a + '" aria-pressed="' + on + '">' + esc(A.label) + "<small>" + A.hours + "時間" + (cost ? "・" + cost : "") + "</small></button>";
+    }).join("") + "</div></div>";
+    // 聞く
+    if ((p.acts || []).indexOf("interview") >= 0) {
+      var whoOpts = [["work", G.meta.role === "student" ? "学校の人" : "職場の人"], ["friends", "知り合い"]];
+      if (S.marketDone || mods.market || (p.acts || []).indexOf("market") >= 0) whoOpts.push(["market", "マルシェのお客さん"]);
+      if (S.bakery || mods.bakeryTrial) whoOpts.push(["bakery", "パン屋のお客さん"]);
+      html += '<div class="sub"><span class="lab">だれに、どう聞く？（2人）</span>';
+      for (var k = 0; k < 2; k++) {
+        var iv = (p.interviews || [])[k] || {};
+        html += '<span class="hint">' + (k + 1) + '人目</span><div class="chips" aria-label="' + (k + 1) + '人目の相手">' + whoOpts.map(function (w) { return '<button type="button" class="chip" data-act="iv-ch" data-k="' + k + '" data-ch="' + w[0] + '" aria-pressed="' + (iv.ch === w[0]) + '">' + esc(w[1]) + "</button>"; }).join("") + "</div>" +
+          '<div class="chips" aria-label="' + (k + 1) + '人目の聞き方">' + ["opinion", "fact"].map(function (a) { return '<button type="button" class="chip" data-act="iv-ask" data-k="' + k + '" data-ask="' + a + '" aria-pressed="' + (iv.ask === a) + '">' + esc(D.ASK[a].label) + "</button>"; }).join("") + "</div>";
+      }
+      html += "</div>";
+    }
+    if ((p.acts || []).indexOf("trial") >= 0) {
+      html += '<div class="sub"><span class="lab">何を試作する？</span><div class="chips">' + ["label", "wrap", "flavor"].map(function (f) {
+        var done = f === "flavor" ? S.feat.flavor >= 3 : S.feat[f];
+        return '<button type="button" class="chip" data-act="trial" data-f="' + f + '" aria-pressed="' + (p.trial === f) + '"' + (done ? " disabled" : "") + ">" + esc(D.FEATURES[f].label) + (f === "flavor" && S.feat.flavor ? "（いま" + (S.feat.flavor + 1) + "種類）" : "") + "<small>" + esc(D.FEATURES[f].desc) + "</small></button>";
+      }).join("") + "</div></div>";
+    }
+    if (S.helperSpot) html += '<div class="row-set"><span class="lab">手伝い</span><div class="chips"><button type="button" class="chip" data-act="help" aria-pressed="' + !!p.helperUse + '">今月はミカに頼む<small>+10時間・3,000円</small></button></div></div>';
+    if (S.kitchen) html += '<div class="row-set"><span class="lab">キッチン</span><div class="chips"><button type="button" class="chip" data-act="kitchen" aria-pressed="' + !!p.kitchenUse + '">共同キッチンを使う<small>焼く時間が3割短い・月5,000円</small></button></div></div>';
+    // 時間とお金
+    var pct = Math.min(100, Math.round(used / Math.max(1, avail) * 100));
+    html += '<div class="timebar' + (over ? " over" : "") + '"><div class="tl2"><span>使う時間</span><b class="num">' + used + " / " + avail + '時間</b></div><div class="tb"><i style="width:' + pct + '%"></i></div>' +
+      (over ? '<p class="hint">使える時間をこえています。このままやると、体力が落ちます。</p>' : "") + "</div>";
+    var cost = (mods.preorder ? 0 : p.make * uc) + ((p.acts || []).indexOf("market") >= 0 || mods.market ? 3000 : 0) + ((p.acts || []).indexOf("trial") >= 0 && !S.freeTrial ? 2000 : 0) + (S.helperSpot && p.helperUse ? 3000 : 0) + (S.kitchen && p.kitchenUse ? 5000 : 0);
+    html += '<p class="costline">先に出ていくお金：約' + cost.toLocaleString() + "円（元手 " + yen(S.cash) + "）</p>";
+    var need = needInput(S);
+    html += (need ? '<p class="warnbox">' + need + "</p>" : "") + '<button class="btn pri wide" data-act="run"' + (need ? " disabled" : "") + ">この作戦で1か月やってみる</button></div>";
+    return html;
+  }
+  function needInput(S) {
+    var p = S.plan;
+    if ((p.acts || []).indexOf("interview") >= 0) {
+      var ivs = p.interviews || [];
+      if (ivs.length < 2 || !ivs[0].ch || !ivs[1].ch || !ivs[0].ask || !ivs[1].ask) return "話を聞く相手と、聞き方を、2人分えらんでください。";
+    }
+    if ((p.acts || []).indexOf("trial") >= 0 && !p.trial) return "何を試作するか、えらんでください。";
+    return "";
+  }
+
+  // ---------- 仮説 ----------
+  function hypHtml() {
+    var S = E.ensureLive(G), k = E.known(G, S), T = G.meta.truth;
+    var facts = S.quotes.filter(function (q) { return q.kind === "fact"; });
+    function row(q, ok, val, ev, hint) {
+      return '<div class="hq' + (ok ? " ok" : "") + '"><span class="q">' + q + '</span><span class="a">' + (ok ? esc(val) : "まだ分からない") + '</span><span class="meter"><i style="width:' + ev + '%"></i></span><span class="st">' + (ok ? "たしかめた" : esc(hint)) + "</span></div>";
+    }
+    var html = '<div class="hyp">' +
+      row("だれが、いちばん買ってくれる？", k.who, E.segLabel(G, T.main), S.ev.who, "あったことを聞く・売ってみると、分かってくる") +
+      row("その人は、何のために買う？", k.job, E.segJob(G, T.main) + "（効く工夫：" + D.FEATURES[D.SEGS[T.main].key].label + "）", S.ev.job, "あったことを聞くと、分かってくる") +
+      row("いくらまでなら払う？", k.wtp, "1袋 " + T.wtp[T.main] + "円くらい（" + D.FEATURES[D.SEGS[T.main].key].label + "をつけると、" + E.wtpWithKey(G) + "円くらいまで）", S.ev.wtp, "あったことを聞く・売ってみると、分かってくる") + "</div>";
+    if (facts.length || S.opinions) html += '<p class="hint">集めた声：あったこと ' + facts.length + "件・意見 " + S.opinions + "件</p>";
+    return html;
+  }
+  function openHyp() {
+    var S = E.ensureLive(G);
+    var qs = S.quotes.slice().reverse();
+    sheet("<h2>仮説ボード</h2><p class=\"lead\">本当の答えは、ゲームの中に隠れています。調べたり考えたりしても出てきません。お客さんに、あったことを聞くか、売ってみると、少しずつ分かります。</p>" + hypHtml() +
+      (qs.length ? "<section><h3>集めた声（新しい順）</h3>" + voicesHtml(qs) + "</section>" : "") + '<button class="btn ghost wide" data-act="close">閉じる</button>');
+  }
+
+  // ---------- 年表 ----------
+  function cellsHtml(path, opt) {
+    opt = opt || {};
+    var real = {}; G.meta.real.forEach(function (r) { if (r.status === "done") real[r.m] = 1; });
+    return '<div class="tl-row">' + path.map(function (n) {
+      var cls = "c";
+      if (opt.dimBefore !== undefined && n.m < opt.dimBefore) cls += " shared";
+      if (n.log) cls += n.log.profit > 0 ? " plus" : n.log.profit < 0 ? " minus" : " zero";
+      else if (n.id === G.cur && !opt.small) cls += " now";
+      if (n.fork) cls += " fork";
+      if (real[n.m]) cls += " real";
+      var lab = E.monthLabel(n.m) + (n.log ? "：利益" + yen(n.log.profit) : "") + (n.fork ? "／ここで方向を変えた" : "");
+      return opt.small ? '<span class="' + cls + '" title="' + esc(lab) + '"></span>' : '<button type="button" class="' + cls + '" data-act="cell" data-id="' + n.id + '" aria-label="' + esc(lab) + '">' + E.monthLabel(n.m).replace("月", "") + "</button>";
+    }).join("") + "</div>";
+  }
+  function renderTimeline() { var t = $("#tl"); t.innerHTML = cellsHtml(E.path(G)); t.scrollLeft = t.scrollWidth; }
+
+  function render() {
+    E.ensureLive(G);
+    renderHud(); renderBanner(); renderShop(); renderFlow(); renderTimeline();
+    var h = $(".hud"), d = $(".dock");
+    if (h) document.documentElement.style.setProperty("--hud-h", h.offsetHeight + "px");
+    if (d) document.documentElement.style.setProperty("--dock-h", d.offsetHeight + "px");
+  }
+
+  // ---------- 重ねて出す画面 ----------
+  function sheet(html, onMount) {
+    var s = $("#sheet");
+    s.innerHTML = '<div class="sheet-in" role="dialog" aria-modal="true">' + html + "</div>";
+    s.hidden = false;
+    var inner = s.querySelector(".sheet-in");
+    if (onMount) onMount(inner);
+    inner.scrollTop = 0;
+    var f = inner.querySelector("button, input"); if (f) { try { f.focus({ preventScroll: true }); } catch (e) { } }
+  }
+  function closeSheet() { var s = $("#sheet"); s.hidden = true; s.innerHTML = ""; }
+
+  function openSetup() {
+    var roles = Object.keys(D.ROLES).map(function (k, i) { return '<label class="opt' + (i === 0 ? " on" : "") + '"><input type="radio" name="role" value="' + k + '"' + (i === 0 ? " checked" : "") + "><span>" + D.ROLES[k].label + "<small>" + D.ROLES[k].note + "</small></span></label>"; }).join("");
+    var rules = D.STOP_RULES.map(function (r, i) { return '<label class="opt' + (i === 2 ? " on" : "") + '"><input type="radio" name="rule" value="' + r.id + '"' + (i === 2 ? " checked" : "") + "><span>" + r.l + "</span></label>"; }).join("");
+    sheet("<h2>週末の焼き菓子を、始めてみる</h2>" +
+      '<p class="lead">あなたは、お菓子を作るのが得意。週末に焼き菓子を作って、売ってみることにしました。1か月ずつ、値段・作る数・売る場所・時間の使い方を決めて、1年やってみます。</p>' +
+      '<label class="field" for="f-name">お店の名前<input id="f-name" type="text" maxlength="20" placeholder="わたしの焼き菓子"></label>' +
+      '<section><h3>いまの立場</h3><div class="opts">' + roles + "</div></section>" +
+      '<section><h3>始める前に：何が起きたら、やめますか？</h3><div class="opts">' + rules + '</div><p class="hint">決めておくと、そのときにゲームが聞いてきます。</p></section>' +
+      '<button class="btn pri wide" data-act="setup-go">始める</button>', function (s) {
+        s.addEventListener("change", function () { Array.prototype.forEach.call(s.querySelectorAll(".opt"), function (o) { o.classList.toggle("on", o.querySelector("input").checked); }); });
+      });
+  }
+  function setupGo() {
+    var s = $("#sheet");
+    G = E.newGame({ name: s.querySelector("#f-name").value, role: (s.querySelector('input[name="role"]:checked') || {}).value, rule: (s.querySelector('input[name="rule"]:checked') || {}).value });
+    save(); openHowto(true); render();
+  }
+  function openHowto(first) {
+    sheet("<h2>遊び方</h2><section>" +
+      "<p>1か月に1回、<b>場面</b>（迷いどころ）が来ます。どれかを選ぶと、<b>今月の作戦</b>を決められます。</p>" +
+      "<p>作戦は、1袋の値段・作る数・売る場所・今月やること（話を聞く・マルシェに出る・試作する など）。使える時間とお金には限りがあります。</p>" +
+      "<p>「この作戦で1か月やってみる」を押すと、<b>帳簿</b>が返ってきます。売れた数、売れ残り、利益、時給換算と、なぜそうなったか。</p>" +
+      "<p>だれが本当に買ってくれるのか、いくらまで払うのかは、<b>隠れています</b>。お客さんに聞くか、売ってみると、少しずつ分かります（仮説ボード）。</p>" +
+      "<p>下の年表から、いつでも前の月に戻れます。12か月で、1年の決算です。やめるときは「今日はここまで」を押してください。</p></section>" +
+      '<p class="hint">同じ月に同じ作戦なら、同じ結果になります。</p><button class="btn pri wide" data-act="close">' + (first ? "4月を始める" : "閉じる") + "</button>");
+  }
+
+  // 決算
+  function openYear() {
+    var s = E.summary(G);
+    var p = E.path(G).filter(function (n) { return n.log; });
+    var mx = Math.max.apply(null, p.map(function (n) { return Math.abs(n.log.profit); }).concat([1]));
+    var bars = p.map(function (n) { return '<i class="' + (n.log.profit < 0 ? "neg" : "") + '" style="height:' + Math.max(2, Math.round(Math.abs(n.log.profit) / mx * 88)) + 'px" title="' + E.monthLabel(n.m) + " " + yen(n.log.profit) + '"></i>'; }).join("");
+    var labs = p.map(function (n) { return "<span>" + E.monthLabel(n.m).replace("月", "") + "</span>"; }).join("");
+    var k = s.known, kc = (k.who ? 1 : 0) + (k.job ? 1 : 0) + (k.wtp ? 1 : 0);
+    var words = Object.keys(G.meta.words).map(function (id) { return E.word(id).w; }).join("・");
+    var real = E.realDone(G);
+    var nextL = { keep: "来年も、このまま続ける", change: "来年は、形を変えてみる", stop: "1年で区切りをつける" }[s.next] || (s.quit ? "途中で、やめると決めた" : "");
+    sheet('<span class="hint">1年の決算</span><h2>' + esc(G.meta.name) + "の1年</h2>" +
+      (real ? '<p class="bigline">この1年で、現実で<b>' + real + "回</b>動きました。</p>" : "") +
+      '<section><h3>月ごとの利益</h3><div class="bars">' + bars + '</div><div class="bars-l">' + labs + "</div></section>" +
+      "<section><h3>1年の帳簿</h3><p>売上 " + yen(s.revenue) + "・利益 " + yen(s.profit) + "・使った時間 " + Math.round(s.hours) + "時間・時給換算 " + yen(s.hourly) + "</p>" +
+      "<p>作った " + s.made + "袋・売れた " + s.sold + "袋・売れ残り " + s.wasted + "袋・売り切れで買えなかった人 約" + s.missed + "袋分</p><p>常連さん " + s.reg + "人・元手 " + yen(s.cash) + "</p></section>" +
+      "<section><h3>本当の答え</h3><p>いちばん買ってくれる人：<b>" + esc(s.truth.main) + "</b></p><p>その人の用事：<b>" + esc(s.truth.job) + "</b>（効く工夫：" + esc(s.truth.key) + "）</p><p>払ってもいい値段：<b>1袋 " + s.truth.wtp + "円</b>くらい（" + esc(s.truth.key) + "をつけると、" + s.truth.wtpKey + "円くらいまで）</p>" +
+      '<p class="hint">あなたがたしかめられたのは、3つのうち' + kc + "つ。集めた声は、あったこと " + s.facts + "件・意見 " + s.opinions + "件でした。</p></section>" +
+      (words ? "<section><h3>出会ったことば</h3><p>" + esc(words) + "</p></section>" : "") +
+      (nextL ? "<section><h3>来年のつもり</h3><p>" + esc(nextL) + "</p></section>" : "") +
+      '<section><h3>来年の自分に、ひとこと残しますか？</h3><label class="field" for="y-note"><span class="hint">書いたことは、この画面にまた出ます。</span><textarea id="y-note" maxlength="200">' + esc((G.meta.notes.slice(-1)[0] || {}).text || "") + "</textarea></label></section>" +
+      '<div class="go"><button class="btn pri wide" data-act="year-save">ひとことを残す</button><button class="btn wide" data-act="restart">もう一度、ちがうやり方で始める</button><button class="btn ghost wide" data-act="routes">年表から戻って、別の道を試す</button><button class="btn ghost wide" data-act="close">閉じる</button></div>');
+  }
+
+  // 年表の1か月・別の道
+  function openCell(id) {
+    var n = G.nodes[id]; if (!n) return;
+    var html = '<span class="hint">年表</span><h2>' + E.monthLabel(n.m) + "</h2>";
+    if (n.fork) html += '<p class="hint">ここで方向を変えました（' + n.fork.n + "回目）。</p>";
+    if (n.sceneDone) html += "<p>場面：" + esc(E.sceneTitle(G, E.sceneById(n.sceneId))) + " → " + esc(E.fill(n.sceneDone.label, G)) + "</p>";
+    if (n.log) html += "<p>値段 " + n.log.price + "円・作った " + n.log.made + "袋・売れた " + n.log.sold + "袋・利益 " + yen(n.log.profit) + "</p>";
+    else html += "<p>いまの月です。</p>";
+    if (E.canRewind(G, id)) html += '<p class="hint">この月の初めに戻ります。いまの道は消えずに「別の道」に残ります。</p><button class="btn dark wide" data-act="rewind" data-id="' + id + '">この月の初めからやり直す</button>';
+    html += '<button class="btn ghost wide" data-act="close">閉じる</button>';
+    sheet(html);
+  }
+  function doRewind(id) {
+    var r = E.rewind(G, id); if (!r) return;
+    ui.sceneRes = null; closeSheet(); save(); render();
+    note(E.monthLabel(r.m) + "の初めに戻りました。方向を変えたのは" + r.n + "回目です。");
+    window.scrollTo(0, 0);
+  }
+  function openRoutes() {
+    var rs = E.routes(G);
+    var html = '<h2>年表と、別の道</h2><p class="lead">やり直した道も、消さずに並べています。どちらが良い・悪いは、ありません。</p><div class="routes">';
+    rs.forEach(function (r) {
+      var sum = 0; r.path.forEach(function (n) { if (n.log) sum += n.log.profit; });
+      html += '<div class="route' + (r.current ? " cur" : "") + '"><div class="rh"><span>' + (r.current ? "いまの道" : r.fork ? r.fork.n + "回目に分かれた道" : "はじめの道") + "</span><span>" + E.monthLabel(r.end.m) + "まで・利益の合計 " + yen(sum) + "</span></div>" +
+        cellsHtml(r.path, { small: true, dimBefore: r.fork ? r.forkM : undefined }) +
+        (r.current ? "" : '<button class="btn" data-act="switch" data-id="' + r.leaf + '">この道の続きを遊ぶ</button>') + "</div>";
+    });
+    sheet(html + '</div><button class="btn ghost wide" data-act="close">閉じる</button>');
+  }
+  function openWords() {
+    var got = G.meta.words;
+    sheet("<h2>ことば</h2><p class=\"lead\">" + Object.keys(got).length + " / " + D.WORDS.length + "。迷ったり、うまくいったりした場面で、その名前として出会います。</p><div class=\"dex\">" +
+      D.WORDS.map(function (w) { return got[w.id] ? '<div class="dx"><b>' + esc(w.w) + "</b><p>" + esc(w.m) + '</p><span class="hint">' + E.monthLabel(got[w.id].m) + "に出会った</span></div>" : '<div class="dx off"><b>？？？</b></div>'; }).join("") +
+      '</div><button class="btn ghost wide" data-act="close">閉じる</button>');
+  }
+
+  // 今日はここまで
+  var draft = null;
+  function suggestions() {
+    var S = E.ensureLive(G), facts = S.quotes.filter(function (q) { return q.kind === "fact"; }).length, out = [];
+    out.push({ kind: "ask", text: "身近な1人に「最近、おやつ（手みやげ）をどうしていますか？」と、あったことを聞く" });
+    if (S.feat.label || S.feat.wrap || S.feat.flavor) out.push({ kind: "make", text: "自分の得意なもので、いちばん小さな試作品を1つ作って、1人に見せる" });
+    else out.push({ kind: "make", text: "自分の得意なもので、いちばん小さな形を1つ作って、1人に見せる" });
+    out.push({ kind: "quit", text: "なんとなく続けていることを1つ、今週だけやめて、時間を空ける" });
+    return { list: out, facts: facts };
+  }
+  function openExit() {
+    var sg = suggestions(), t = G.meta.session.tries || 0;
+    var lead = t > 0 ? "今日、ゲームの中で、話を聞く・マルシェに出る・試作するを、あわせて" + t + "回選びましたね。" : "今日は、ゲームの中で、話を聞く・試すを選びませんでしたね。";
+    var opts = sg.list.map(function (s, i) { return '<label class="opt"><input type="radio" name="rk" value="' + i + '"><span>' + esc(s.text) + "</span></label>"; }).join("") + '<label class="opt"><input type="radio" name="rk" value="own"><span>自分で決める</span></label>';
+    sheet('<h2>今日はここまで</h2><p class="lead">' + esc(lead) + "</p><section><h3>現実で、今週ひとつだけ試すなら、何にしますか？</h3>" + (sg.facts ? '<p class="hint">ゲームの中で「あったことを聞く」を' + sg.facts + "回しました。現実でも、同じ聞き方ができます。</p>" : "") +
+      '<div class="opts">' + opts + '</div><label class="field" for="x-text">くわしく（だれに・何を。書かなくてもいい）<input id="x-text" type="text" maxlength="80"></label></section>' +
+      '<div class="row"><button class="btn pri" data-act="exit2">次へ</button><button class="btn ghost" data-act="close">まだ続ける</button></div>', function (s) {
+        s.addEventListener("change", function () { Array.prototype.forEach.call(s.querySelectorAll(".opt"), function (o) { o.classList.toggle("on", o.querySelector("input").checked); }); });
+      });
+  }
+  function exit2() {
+    var s = $("#sheet"), v = (s.querySelector('input[name="rk"]:checked') || {}).value, txt = s.querySelector("#x-text").value.trim();
+    if (v === undefined) { if (!s.querySelector(".warnbox")) s.querySelector(".opts").insertAdjacentHTML("afterend", '<p class="warnbox">1つ選んでください。思いつかないときは「自分で決める」に、いま思いついたことを書いてください。</p>'); return; }
+    if (v === "own" && !txt) { s.querySelector("#x-text").focus(); return; }
+    var sg = suggestions().list;
+    draft = v === "own" ? { kind: "own", text: txt } : { kind: sg[+v].kind, text: sg[+v].text + (txt ? "（" + txt + "）" : "") };
+    sheet("<h2>今週の一手</h2><p class=\"note-prev\">" + esc(draft.text) + '</p><section><h3>それを、何が起きたらやめますか？</h3><div class="opts">' +
+      D.REAL_STOPS.map(function (l, i) { return '<label class="opt"><input type="radio" name="rs" value="' + i + '"><span>' + l + "</span></label>"; }).join("") +
+      '</div><label class="field" for="x-stop">自分で決めるとき<input id="x-stop" type="text" maxlength="60"></label></section><div class="row"><button class="btn pri" data-act="exit3">決めて、今日は終わる</button><button class="btn ghost" data-act="close">まだ続ける</button></div>', function (s2) {
+        s2.addEventListener("change", function () { Array.prototype.forEach.call(s2.querySelectorAll(".opt"), function (o) { o.classList.toggle("on", o.querySelector("input").checked); }); });
+      });
+  }
+  function exit3() {
+    var s = $("#sheet"), i = (s.querySelector('input[name="rs"]:checked') || {}).value, own = s.querySelector("#x-stop").value.trim();
+    var stop = i === undefined ? (own || "決めていない") : (+i === 3 ? (own || "自分で決める") : D.REAL_STOPS[+i]);
+    var it = E.addReal(G, { kind: draft.kind, text: draft.text, stop: stop });
+    G.meta.session = { at: Date.now(), tries: 0, turns: 0 };
+    save();
+    sheet("<h2>今週の一手を決めました</h2><p class=\"note-prev\">" + esc(it.text) + '</p><p class="hint">やめる条件：' + esc(stop) + "</p><p>次に開いたとき、どうだったか聞かせてください。やらなかったとしても、責めたりしません。</p>" +
+      '<label class="field" for="x-copy">手帳やメモに写すとき<textarea id="x-copy" readonly>' + esc("今週の一手：" + it.text + "\nやめる条件：" + stop) + '</textarea></label><div class="row"><button class="btn" data-act="copy">写す（コピー）</button><button class="btn pri" data-act="exit-done">閉じる</button></div>');
+  }
+  var queue = [];
+  function openReturn() {
+    var it = queue[0]; if (!it) { closeSheet(); render(); return; }
+    var d = new Date(it.at);
+    sheet('<span class="hint">おかえりなさい</span><h2>前回の一手は、どうなりましたか？</h2><p class="note-prev">' + esc(it.text) + '</p><p class="hint">' + (d.getMonth() + 1) + "月" + d.getDate() + "日に決めたこと／やめる条件：" + esc(it.stop || "") + '</p><div class="opts"><button class="btn pri wide" data-act="ret" data-v="done">やった</button><button class="btn wide" data-act="ret" data-v="partial">途中</button><button class="btn wide" data-act="ret" data-v="notyet">やらなかった</button></div>');
+  }
+  function doReturn(v) {
+    var it = queue.shift(); E.resolveReal(G, it.id, v); save();
+    var msg = v === "done" ? "現実で動いた分、ゲームの中でも、お客さんのことが少し見えるようになりました（仮説ボード）。年表にも残ります。" : v === "partial" ? "そのままにしておきます。次にまた聞きます。" : "また今度でいいです。";
+    sheet("<h2>" + (v === "done" ? "やりましたね" : v === "partial" ? "途中ですね" : "わかりました") + "</h2><p>" + msg + '</p><button class="btn pri wide" data-act="ret-next">' + (queue.length ? "次の一手へ" : "続きを遊ぶ") + "</button>");
+  }
+  function openMenu() {
+    sheet('<h2>メニュー</h2><div class="opts"><button class="btn wide" data-act="howto">遊び方</button><button class="btn wide" data-act="hyp">仮説ボード</button><button class="btn wide" data-act="words">ことば</button><button class="btn wide" data-act="routes">年表と、別の道</button>' +
+      (E.finished(G) ? '<button class="btn wide" data-act="year">1年の決算</button>' : "") +
+      '<button class="btn ghost wide" data-act="reset">最初からはじめる</button></div><p class="hint">データは、この端末のブラウザに保存しています。</p><button class="btn ghost wide" data-act="close">閉じる</button>');
+  }
+
+  // ---------- 操作 ----------
+  function plan() { return E.ensureLive(G).plan; }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
+    var a = b.getAttribute("data-act"), S = G ? E.ensureLive(G) : null, p = S ? S.plan : null;
+    switch (a) {
+      case "scene":
+        ui.sceneRes = E.resolveScene(G, +b.getAttribute("data-i"));
+        var mods = S.mods || {};
+        if (mods.big) p.make = Math.min(400, p.make + mods.big);
+        if (mods.market) { /* 今月は誘いで出る */ }
+        save(); render(); break;
+      case "p-": p.price = Math.max(200, p.price - 50); renderFlow(); break;
+      case "p+": p.price = Math.min(900, p.price + 50); renderFlow(); break;
+      case "m-": p.make = Math.max(0, p.make - 10); renderFlow(); break;
+      case "m+": p.make = Math.min(400, p.make + 10); renderFlow(); break;
+      case "ch": var c = b.getAttribute("data-ch"); p.ch[c] = !p.ch[c]; renderFlow(); break;
+      case "act":
+        var x = b.getAttribute("data-a"); p.acts = p.acts || [];
+        var i = p.acts.indexOf(x); if (i >= 0) p.acts.splice(i, 1); else p.acts.push(x);
+        if (x === "interview" && i < 0) p.interviews = [{ ch: "work", ask: null }, { ch: "friends", ask: null }];
+        if (x === "trial" && i < 0) p.trial = null;
+        renderFlow(); break;
+      case "iv-ch": var k = +b.getAttribute("data-k"); p.interviews[k] = p.interviews[k] || {}; p.interviews[k].ch = b.getAttribute("data-ch"); renderFlow(); break;
+      case "iv-ask": var k2 = +b.getAttribute("data-k"); p.interviews[k2] = p.interviews[k2] || {}; p.interviews[k2].ask = b.getAttribute("data-ask"); renderFlow(); break;
+      case "trial": p.trial = b.getAttribute("data-f"); renderFlow(); break;
+      case "help": p.helperUse = !p.helperUse; renderFlow(); break;
+      case "kitchen": p.kitchenUse = !p.kitchenUse; renderFlow(); break;
+      case "run":
+        var r = E.run(G); if (r) { ui.sceneRes = null; save(); render(); window.scrollTo(0, 0); }
+        break;
+      case "next": if (E.next(G)) { save(); render(); window.scrollTo(0, 0); } break;
+      case "redo": doRewind(G.cur); break;
+      case "year": openYear(); break;
+      case "year-save":
+        var t = ($("#y-note") || {}).value || "";
+        if (t.trim()) { G.meta.notes.push({ text: t.trim().slice(0, 200), at: Date.now() }); save(); }
+        b.textContent = "残しました"; break;
+      case "restart":
+        var keep = G.meta; G = E.newGame({ name: keep.name, role: keep.role, rule: keep.rule });
+        G.meta.notes = keep.notes; G.meta.real = keep.real; G.meta.forks = keep.forks;
+        ui.sceneRes = null; save(); closeSheet(); render(); note("もう一度、4月から。お客さんの答えは、前とはちがうかもしれません。"); break;
+      case "cell": openCell(b.getAttribute("data-id")); break;
+      case "rewind": doRewind(b.getAttribute("data-id")); break;
+      case "routes": openRoutes(); break;
+      case "switch": E.switchRoute(G, b.getAttribute("data-id")); ui.sceneRes = null; save(); closeSheet(); render(); break;
+      case "words": openWords(); break;
+      case "hyp": openHyp(); break;
+      case "howto": openHowto(false); break;
+      case "menu": openMenu(); break;
+      case "exit": openExit(); break;
+      case "exit2": exit2(); break;
+      case "exit3": exit3(); break;
+      case "copy": try { navigator.clipboard.writeText($("#x-copy").value).then(function () { b.textContent = "コピーしました"; }, function () { b.textContent = "選んで写してください"; }); } catch (er) { b.textContent = "選んで写してください"; } break;
+      case "exit-done": closeSheet(); ui.resting = true; render(); break;
+      case "resume": ui.resting = false; render(); break;
+      case "ret": doReturn(b.getAttribute("data-v")); break;
+      case "ret-next": openReturn(); break;
+      case "setup-go": setupGo(); break;
+      case "reset": sheet('<h2>最初からはじめる</h2><p>いまのデータ（年表・ことば・現実の一手の記録）は消えます。</p><div class="row"><button class="btn dark" data-act="reset-go">消して、最初から</button><button class="btn ghost" data-act="close">やめる</button></div>'); break;
+      case "reset-go": try { localStorage.removeItem(KEY); } catch (er) { } G = null; ui = { sceneRes: null, warned: false, resting: false }; closeSheet(); openSetup(); break;
+      case "close": closeSheet(); if (G) render(); break;
+    }
+  });
+  window.addEventListener("resize", function () { if (G) render(); });
+
+  function boot() {
+    G = load();
+    if (!G) { openSetup(); return; }
+    E.ensureLive(G);
+    var now = Date.now();
+    if (now - (G.meta.lastActive || 0) > 2 * 3600 * 1000) G.meta.session = { at: now, tries: 0, turns: 0 };
+    queue = E.pendingReal(G).filter(function (r) { return r.at < G.meta.session.at || now - r.at > 2 * 3600 * 1000; }).slice(0, 3);
+    render();
+    if (queue.length) openReturn();
+  }
+  boot();
+})();
+
+</script>
+</body>
+</html>
