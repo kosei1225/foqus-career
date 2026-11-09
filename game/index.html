@@ -1288,7 +1288,7 @@ textarea.code { font-family: ui-monospace, Menlo, monospace; font-size: 11px; mi
     var o = JSON.parse(text);
     var G = o && o.app === "watashi-kabushiki" ? o.data : o;
     if (!G || !G.nodes || !G.cur || !G.meta || !G.nodes[G.cur]) throw new Error("形式がちがいます");
-    G.live = null; G.liveOf = null;
+    if (G.liveOf !== G.cur) { G.live = null; G.liveOf = null; }   // 月の途中（結果のあと）の状態は、そのまま引きつぐ
     E.ensureLive(G);
     return G;
   };
@@ -1315,7 +1315,7 @@ document.documentElement.lang = "ja";
     catch (e) { if (!ui.saveWarned) { ui.saveWarned = true; toastNote("この端末には保存できませんでした。メニューの「データを書き出す」で残せます。"); } }
   }
   function load() {
-    try { var t = localStorage.getItem(KEY); if (!t) return null; var o = JSON.parse(t); if (!o || !o.nodes || !o.cur) return null; o.live = null; o.liveOf = null; return o; }
+    try { var t = localStorage.getItem(KEY); if (!t) return null; var o = JSON.parse(t); if (!o || !o.nodes || !o.cur) return null; if (o.liveOf !== o.cur) { o.live = null; o.liveOf = null; } return o; }
     catch (e) { return null; }
   }
   function toastNote(t) { var b = $("#note"); if (!b) return; b.textContent = t; b.hidden = false; }
