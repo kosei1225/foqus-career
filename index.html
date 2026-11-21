@@ -195,6 +195,7 @@ footer.site .notes { display: grid; gap: 4px; opacity: .85; }
 @media (max-width: 760px) { .stats { grid-template-columns: minmax(0, 1fr); } .stat + .stat { padding-left: 0; border-left: 0; } }
 
 /* 考え方：会社は／わたしは */
+.kicker { margin-top: 18px; font-family: var(--f-display); font-weight: 700; font-size: clamp(20px, 2.4vw, 26px); line-height: 1.6; color: var(--deep); word-break: auto-phrase; text-wrap: balance; }
 .think { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 64px; align-items: start; margin-top: var(--sp-s); }
 .think .lead3 { font-size: 17px; line-height: 2; }
 .think .motto { margin-top: var(--sp-s); font-family: var(--f-display); font-size: clamp(22px, 2.6vw, 30px); line-height: 1.6; }
@@ -252,10 +253,12 @@ footer.site .notes { display: grid; gap: 4px; opacity: .85; }
 .road li span { font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: .08em; }
 .road li b { font-size: 18px; word-break: auto-phrase; }
 @media (max-width: 480px) { .road li { grid-template-columns: 4.2em minmax(0, 1fr); gap: 10px; } .road li b { font-size: 17px; } }
-.ways { margin-top: var(--sp-s); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-.ways li { background: var(--sheet); border: 1px solid var(--line); padding: 14px 6px; font-weight: 700; font-size: 14px; text-align: center; line-height: 1.5; word-break: auto-phrase; display: grid; place-items: center; }
+/* 提供内容：番号つきの3つ */
+.road.menu li { grid-template-columns: 2.6em minmax(0, 1fr); padding: 20px 0; }
+.road.menu li span { font-family: var(--f-display); font-size: 18px; color: var(--deep); letter-spacing: .04em; }
+.road.menu li b { font-family: var(--f-display); font-weight: 700; font-size: clamp(18px, 2vw, 22px); line-height: 1.5; }
+.to-contact { margin-top: 28px; }
 @media (max-width: 860px) { .next { grid-template-columns: minmax(0, 1fr); gap: 40px; } }
-@media (max-width: 480px) { .ways { grid-template-columns: minmax(0, 1fr); } }
 
 /* 会社 */
 .co-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: var(--sp-s); }
@@ -265,33 +268,30 @@ footer.site .notes { display: grid; gap: 4px; opacity: .85; }
 .co-card .biz { background: var(--deep); color: var(--on-deep); padding: 18px 24px; display: flex; justify-content: space-between; align-items: baseline; gap: 6px 12px; flex-wrap: wrap; }
 .co-card .biz b { font-family: var(--f-display); font-weight: 700; font-size: clamp(20px, 2.2vw, 24px); }
 .co-card .biz small { font-size: 13px; font-weight: 700; opacity: .85; }
-.co-dl { margin: var(--sp-s) 0 0; display: grid; grid-template-columns: 7em minmax(0, 1fr); border-top: 1px solid var(--line); max-width: 760px; }
-.co-dl dt, .co-dl dd { margin: 0; padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
-.co-dl dt { font-weight: 700; color: var(--muted); font-size: 14px; }
 .mission { margin-top: 16px; font-family: var(--f-display); font-size: clamp(21px, 3vw, 32px); line-height: 1.6; word-break: auto-phrase; text-wrap: balance; }
 .ib { display: inline-block; }
 @media (max-width: 600px) { .pc-only { display: none; } }
 @media (max-width: 760px) { .co-grid { grid-template-columns: minmax(0, 1fr); } }
 
 /* 説明の文は、句の切れ目で折り返す */
-.stat .cap, .door .cap, .src, .sec-lead, .lead3, .co-card .phrase, .ocard .cta, .common, .faq summary, .faq details p { word-break: auto-phrase; }
+.stat .cap, .door .cap, .src, .sec-lead, .lead3, .co-card .phrase, .ocard .cta, .common, .faq summary, .faq details p, .lead2, .flow span, .cf .checks2 label, .cf textarea { word-break: auto-phrase; }
 
 </style>
 </head>
 <body>
 
-<div class="testbar" lang="ja"><div class="wrap"><a href="#next"><span>年明けから、勉強会を始めます。</span><span aria-hidden="true">→</span></a></div></div>
+<div class="testbar" lang="ja"><div class="wrap"><a href="#contact"><span>勉強会・研修・授業のご相談を、受け付けています。</span><span aria-hidden="true">→</span></a></div></div>
 
 <header class="site-head" lang="ja">
   <div class="wrap">
     <a class="brand" href="#top"><span class="co">FOQUS</span><span>キャリアを経営する</span></a>
     <nav class="nav" aria-label="ページ内の移動">
-      <a href="#about">考え方</a><a href="#offer">プログラムと教材</a><a href="#book">1冊の中身</a><a href="#market">届け先</a><a href="#next">これから</a><a href="#company">会社</a>
+      <a href="#about">考え方</a><a href="#offer">プログラムと教材</a><a href="#book">1冊の中身</a><a href="#market">届け先</a><a href="#next">提供内容</a><a href="#company">会社</a>
     </nav>
   </div>
 </header>
 
-<a class="side-cta" href="#contact" lang="ja">勉強会に参加する</a>
+<a class="side-cta" href="#contact" lang="ja">気軽に相談する</a>
 
 <main id="top" lang="ja">
 <!-- ヒーロー：写真全面＋白抜きの大見出し（3分ピッチの表紙と同じ言葉） -->
@@ -332,7 +332,7 @@ footer.site .notes { display: grid; gap: 4px; opacity: .85; }
 <section class="change" aria-label="キャリアの考え方が抱える、順番の問題">
   <div class="wrap">
     <p>「やりたいこと」を決めてから、動く。<br>その順番が、前提になっている。<br>だから、決まらない人ほど、動けなくなる。</p>
-    <p>足りないのは、やりたいことではない。<br>決まらないまま前に進むための、考え方。</p>
+    <p>足りないのは、やりたいことではない。<br><span class="ib">決まらない前提のもと、</span><span class="ib">前に進むための計画。</span></p>
   </div>
 </section>
 
@@ -341,11 +341,11 @@ footer.site .notes { display: grid; gap: 4px; opacity: .85; }
   <div class="wrap">
     <p class="sec-label">考え方</p>
     <h2 class="sec" id="h-about">会社の考え方で、キャリアを紐解く。</h2>
+    <p class="kicker">起業しない人にも、経営の考え方を。</p>
     <div class="think">
       <div>
         <p class="lead3">事業をつくる人は、いきなり未来を書きません。これまでの実績と、いまの環境から、計画を立てます。キャリアも同じです。</p>
         <p class="motto">未来を決めなくていい。<br>過去と今から、始める。</p>
-        <p class="src">考え方の出どころ：山口周『人生の経営戦略』（ダイヤモンド社）</p>
       </div>
       <table class="ttable">
         <thead><tr><th scope="col"><span class="sr-only">いつ</span></th><th scope="col">会社は</th><th scope="col" class="me">わたしは</th></tr></thead>
@@ -441,20 +441,18 @@ footer.site .notes { display: grid; gap: 4px; opacity: .85; }
   </div>
 </section>
 
-<!-- これから -->
+<!-- 提供内容 -->
 <section class="white pt-l pb-l" id="next" aria-labelledby="h-next">
   <div class="wrap next">
     <div>
-      <p class="sec-label">これから</p>
-      <h2 class="sec" id="h-next">起業しない人にも、<br>経営の考え方を。</h2>
-      <ol class="road">
-        <li><span>年明け</span><b>勉強会スタート</b></li>
-        <li><span>その次</span><b>一般向けプログラム開催</b></li>
-        <li><span>その先</span><b>企業・学校への提供</b></li>
+      <p class="sec-label">提供内容</p>
+      <h2 class="sec" id="h-next">3つの形で、提供します。</h2>
+      <ol class="road menu">
+        <li><span>01</span><b>勉強会</b></li>
+        <li><span>02</span><b>転職・就活に向けた一般向けプログラム提供</b></li>
+        <li><span>03</span><b>企業研修・学校の授業での提供</b></li>
       </ol>
-      <ul class="ways">
-        <li>参加する</li><li>一緒に中身をつくる</li><li>悩んでいる人を紹介する</li>
-      </ul>
+      <p class="to-contact"><a class="more" href="#contact"><span>気軽に相談する</span><span class="ar" aria-hidden="true">→</span></a></p>
     </div>
     <figure><img src="img/p-together.webp" alt="" width="1672" height="941" loading="lazy"></figure>
   </div>
@@ -477,10 +475,6 @@ footer.site .notes { display: grid; gap: 4px; opacity: .85; }
         <p class="biz"><b>人財育成・教育事業</b><small>このページの取り組み</small></p>
       </article>
     </div>
-    <dl class="co-dl">
-      <dt>社名</dt><dd>株式会社FOQUS（2026年12月設立予定）</dd>
-      <dt>代表</dt><dd>毛利康聖</dd>
-    </dl>
   </div>
 </section>
 
@@ -505,12 +499,12 @@ footer.site .notes { display: grid; gap: 4px; opacity: .85; }
   <div class="wrap">
     <div>
       <p class="sec-label">ご連絡</p>
-      <h2 id="h-contact">まずは、年明けの勉強会から</h2>
-      <p class="lead2">参加する。一緒に中身をつくる。悩んでいる人を紹介する。どの関わり方でも、声をかけてください。</p>
+      <h2 id="h-contact">気軽に、ご相談ください</h2>
+      <p class="lead2">勉強会、転職・就活に向けたプログラム、企業研修・学校の授業。まだ決まっていないことでも、構いません。</p>
       <div class="flow">
         <div><b>01</b><span>このフォームでご連絡（立場と関心だけでも構いません）</span></div>
-        <div><b>02</b><span>日程と場所をご案内します</span></div>
-        <div><b>03</b><span>勉強会でお会いします</span></div>
+        <div><b>02</b><span>お話をうかがいます</span></div>
+        <div><b>03</b><span>合う形と日程を、ご提案します</span></div>
       </div>
     </div>
     <form class="cf" id="cf" novalidate>
@@ -527,11 +521,11 @@ footer.site .notes { display: grid; gap: 4px; opacity: .85; }
       <fieldset>
         <legend>関心のあること（いくつでも）</legend>
         <div class="checks2">
-          <label for="c1"><input type="checkbox" id="c1" name="i" value="勉強会に参加">勉強会に参加したい</label>
-          <label for="c2"><input type="checkbox" id="c2" name="i" value="中身をつくる">一緒に中身をつくりたい</label>
-          <label for="c3"><input type="checkbox" id="c3" name="i" value="紹介">悩んでいる人を紹介したい</label>
-          <label for="c4"><input type="checkbox" id="c4" name="i" value="会社・学校で開く">会社や学校で開きたい</label>
-          <label for="c5"><input type="checkbox" id="c5" name="i" value="事務局支援">事務局支援を相談したい</label>
+          <label for="c1"><input type="checkbox" id="c1" name="i" value="勉強会">勉強会に参加したい</label>
+          <label for="c2"><input type="checkbox" id="c2" name="i" value="一般向けプログラム">転職・就活のプログラムを受けたい</label>
+          <label for="c3"><input type="checkbox" id="c3" name="i" value="企業研修・学校の授業">企業研修・学校の授業で使いたい</label>
+          <label for="c4"><input type="checkbox" id="c4" name="i" value="事務局支援">事務局支援を相談したい</label>
+          <label for="c5"><input type="checkbox" id="c5" name="i" value="その他">その他の相談</label>
         </div>
       </fieldset>
       <label for="f-msg">ご連絡の内容<textarea id="f-msg" name="msg" placeholder="気になっていること、開きたい場の様子など"></textarea></label>
